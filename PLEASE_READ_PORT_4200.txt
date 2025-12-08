@@ -1,0 +1,58 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║          🚨 PLEASE USE THE CORRECT PORT! 🚨                    ║
+║                                                                ║
+║  You keep trying to use port 4000, which DOES NOT WORK!       ║
+║                                                                ║
+║  ❌ WRONG:  http://localhost:4000                              ║
+║  ✅ RIGHT:  http://localhost:4200                              ║
+║                                                                ║
+║════════════════════════════════════════════════════════════════║
+║                                                                ║
+║  WHY PORT 4000 SHOWS "LOADING" FOREVER:                       ║
+║                                                                ║
+║  Port 4000 = SSR Server (Server-Side Rendering)               ║
+║  • API calls work on the server (you see data in terminal)    ║
+║  • But the browser UI NEVER finishes loading                  ║
+║  • This is EXPECTED behavior - SSR doesn't work locally!      ║
+║                                                                ║
+║════════════════════════════════════════════════════════════════║
+║                                                                ║
+║  WHY PORT 4200 WORKS:                                         ║
+║                                                                ║
+║  Port 4200 = Development Server                               ║
+║  • API calls work in the browser                              ║
+║  • UI loads perfectly                                         ║
+║  • Everything works!                                          ║
+║                                                                ║
+║════════════════════════════════════════════════════════════════║
+║                                                                ║
+║  SOLUTION (PLEASE DO THIS NOW):                               ║
+║                                                                ║
+║  1. Look at your browser address bar                          ║
+║  2. If it says "localhost:4000", change it to:                ║
+║                                                                ║
+║      localhost:4200                                           ║
+║                                                                ║
+║  3. Press Enter                                               ║
+║  4. Your app will load! ✅                                     ║
+║                                                                ║
+║════════════════════════════════════════════════════════════════║
+║                                                                ║
+║  REMEMBER:                                                    ║
+║                                                                ║
+║  For Development (Local):                                     ║
+║    ALWAYS USE: http://localhost:4200 ✅                        ║
+║                                                                ║
+║  For Production (Deployed):                                   ║
+║    SSR will work on: https://zavvi.deals ✅                    ║
+║                                                                ║
+║════════════════════════════════════════════════════════════════║
+║                                                                ║
+║  HTTP is NOT the issue!                                       ║
+║  The PORT NUMBER is the issue!                                ║
+║                                                                ║
+║  USE PORT 4200! ✅                                             ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+

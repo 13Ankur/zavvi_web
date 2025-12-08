@@ -1,0 +1,21 @@
+# Zavvi - Robots.txt
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+
+# Allow crawling of all pages
+Allow: /category/
+Allow: /shop/
+Allow: /shop-deals/
+Allow: /deals
+Allow: /login
+Allow: /personal-info
+
+# Disallow user-specific pages
+Disallow: /account
+Disallow: /redeemed-coupons
+
+# Sitemap
+Sitemap: https://www.zavvi.deals/sitemap.xml
+

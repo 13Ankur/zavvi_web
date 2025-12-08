@@ -1,0 +1,355 @@
+<div class="coupons-page" role="main">
+  <div class="page-content">
+    <!-- Back Button -->
+    <button 
+      class="back-btn" 
+      (click)="goBack()"
+      (keydown.enter)="goBack()"
+      (keydown.space)="goBack(); $event.preventDefault()"
+      aria-label="Go back to home"
+      type="button">
+      <span class="material-icons" aria-hidden="true">arrow_back</span>
+      <span class="back-text">Back to Home</span>
+    </button>
+
+    <h1 class="page-title">
+      <span class="material-icons" aria-hidden="true">confirmation_number</span>
+      My Coupons
+    </h1>
+    
+    <!-- Filters -->
+    <nav class="filter-tabs" role="tablist" aria-label="Filter coupons">
+      <button 
+        class="filter-tab" 
+        [class.active]="selectedFilter === 'all'"
+        (click)="filterCoupons('all')"
+        (keydown.enter)="filterCoupons('all')"
+        (keydown.space)="filterCoupons('all'); $event.preventDefault()"
+        role="tab"
+        [attr.aria-selected]="selectedFilter === 'all'"
+        type="button"
+        aria-label="Show all coupons">
+        <span class="material-icons" aria-hidden="true">list</span>
+        All
+      </button>
+      <button 
+        class="filter-tab" 
+        [class.active]="selectedFilter === 'active'"
+        (click)="filterCoupons('active')"
+        (keydown.enter)="filterCoupons('active')"
+        (keydown.space)="filterCoupons('active'); $event.preventDefault()"
+        role="tab"
+        [attr.aria-selected]="selectedFilter === 'active'"
+        type="button"
+        aria-label="Show active coupons only">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        Active
+      </button>
+      <button 
+        class="filter-tab" 
+        [class.active]="selectedFilter === 'used'"
+        (click)="filterCoupons('used')"
+        (keydown.enter)="filterCoupons('used')"
+        (keydown.space)="filterCoupons('used'); $event.preventDefault()"
+        role="tab"
+        [attr.aria-selected]="selectedFilter === 'used'"
+        type="button"
+        aria-label="Show used coupons only">
+        <span class="material-icons" aria-hidden="true">done_all</span>
+        Used
+      </button>
+      <button 
+        class="filter-tab" 
+        [class.active]="selectedFilter === 'expired'"
+        (click)="filterCoupons('expired')"
+        (keydown.enter)="filterCoupons('expired')"
+        (keydown.space)="filterCoupons('expired'); $event.preventDefault()"
+        role="tab"
+        [attr.aria-selected]="selectedFilter === 'expired'"
+        type="button"
+        aria-label="Show expired coupons only">
+        <span class="material-icons" aria-hidden="true">schedule</span>
+        Expired
+      </button>
+    </nav>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-container" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <p>Loading your coupons...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && errorMessage" class="error-container" role="alert">
+      <span class="material-icons error-icon">error_outline</span>
+      <h2>Oops!</h2>
+      <p>{{ errorMessage }}</p>
+      <button (click)="retryLoading()" class="retry-btn">
+        <span class="material-icons">refresh</span>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Coupons List -->
+    <section *ngIf="!isLoading && !errorMessage && coupons.length > 0" class="coupons-list" role="list" aria-label="Your redeemed coupons">
+      <article 
+        class="coupon-card" 
+        *ngFor="let coupon of coupons; trackBy: trackByCouponId" 
+        (click)="viewCouponDetails(coupon)"
+        (keydown.enter)="viewCouponDetails(coupon)"
+        (keydown.space)="viewCouponDetails(coupon); $event.preventDefault()"
+        [attr.tabindex]="0"
+        role="listitem"
+        [attr.aria-label]="'View details for ' + coupon.dealTitle + ' at ' + coupon.shopName + ', ' + getStatusText(coupon.status)">
+        
+        <!-- Status Badge -->
+        <div class="status-badge" [ngClass]="getCouponStatusClass(coupon.status)">
+          <span class="material-icons status-icon">
+            {{ coupon.status === 'active' ? 'check_circle' : coupon.status === 'used' ? 'done_all' : 'schedule' }}
+          </span>
+          {{ getStatusText(coupon.status) }}
+        </div>
+
+        <!-- Shop Info -->
+        <div class="shop-section">
+          <div class="shop-logo">
+            <img [src]="coupon.shopLogo || ('https://ui-avatars.com/api/?name=' + (coupon.shopName ? coupon.shopName.charAt(0) : 'S') + '&size=100&background=6C47FF&color=fff')" 
+                 [alt]="coupon.shopName + ' logo'"
+                 (error)="onImageError($event, coupon.shopName)"
+                 loading="lazy">
+          </div>
+          <div class="shop-details">
+            <h3 class="shop-name">{{ coupon.shopName }}</h3>
+            <p class="shop-address" *ngIf="coupon.shopAddress">
+              <span class="material-icons">location_on</span>
+              {{ coupon.shopAddress }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Deal Info -->
+        <div class="deal-section">
+          <h2 class="deal-title">{{ coupon.dealTitle }}</h2>
+          <div class="discount-badge" *ngIf="coupon.discount">{{ coupon.discount }}</div>
+        </div>
+
+        <!-- Coupon Code Preview -->
+        <div class="code-preview">
+          <span class="material-icons">confirmation_number</span>
+          <span class="code">{{ coupon.displayCode }}</span>
+          <button class="copy-btn-mini" 
+                  (click)="$event.stopPropagation(); copyCouponCode(coupon.displayCode)"
+                  [attr.aria-label]="'Copy coupon code ' + coupon.displayCode">
+            <span class="material-icons">content_copy</span>
+          </button>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="quick-info">
+          <div class="info-item" *ngIf="coupon.redeemedAt">
+            <span class="material-icons">event</span>
+            <span>{{ coupon.redeemedAt | date:'MMM dd, yyyy' }}</span>
+          </div>
+          <div class="info-item" *ngIf="coupon.expiresAt && coupon.status === 'active'">
+            <span class="material-icons">schedule</span>
+            <span>Expires: {{ coupon.expiresAt | date:'MMM dd' }}</span>
+          </div>
+        </div>
+
+        <!-- Action Hint -->
+        <div class="action-hint">
+          <span class="material-icons">touch_app</span>
+          Tap to view full details & QR code
+        </div>
+      </article>
+    </section>
+
+    <!-- No Coupons -->
+    <div *ngIf="!isLoading && !errorMessage && coupons.length === 0" class="no-coupons">
+      <span class="material-icons no-coupons-icon">receipt_long</span>
+      <h2>No Coupons Yet</h2>
+      <p>Start exploring amazing deals and redeem your first coupon!</p>
+      <button routerLink="/" class="explore-btn">
+        <span class="material-icons">explore</span>
+        Explore Deals
+      </button>
+    </div>
+  </div>
+
+  <!-- Coupon Detail Modal -->
+  <div class="modal-overlay" 
+       *ngIf="showDetailModal" 
+       (click)="closeDetailModal()"
+       role="dialog"
+       aria-modal="true"
+       [attr.aria-label]="'Coupon details for ' + selectedCoupon?.dealTitle">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <!-- Close Button -->
+      <button class="close-btn" 
+              (click)="closeDetailModal()"
+              aria-label="Close dialog">
+        <span class="material-icons">close</span>
+      </button>
+
+      <div class="modal-body" *ngIf="selectedCoupon">
+        <!-- Header -->
+        <div class="modal-header">
+          <div class="modal-shop-logo">
+            <img [src]="selectedCoupon.shopLogo || ('https://ui-avatars.com/api/?name=' + (selectedCoupon.shopName ? selectedCoupon.shopName.charAt(0) : 'S') + '&size=120&background=6C47FF&color=fff')" 
+                 [alt]="selectedCoupon.shopName + ' logo'"
+                 (error)="onImageError($event, selectedCoupon.shopName)">
+          </div>
+          <h2 class="modal-shop-name">{{ selectedCoupon.shopName }}</h2>
+          <div class="modal-status-badge" [ngClass]="getCouponStatusClass(selectedCoupon.status)">
+            {{ getStatusText(selectedCoupon.status) }}
+          </div>
+        </div>
+
+        <!-- Deal Info -->
+        <div class="modal-deal-section">
+          <h3 class="modal-deal-title">{{ selectedCoupon.dealTitle }}</h3>
+          <div class="modal-discount-badge" *ngIf="selectedCoupon.discount">
+            {{ selectedCoupon.discount }}
+          </div>
+          <p class="modal-description" *ngIf="selectedCoupon.description">
+            {{ selectedCoupon.description }}
+          </p>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="qr-section">
+          <h4>
+            <span class="material-icons">qr_code_2</span>
+            Show this to vendor
+          </h4>
+          <div class="qr-container">
+            <img [src]="selectedCoupon.qrCodeUrl" 
+                 alt="QR Code for coupon redemption"
+                 *ngIf="selectedCoupon.qrCodeUrl">
+            <div class="no-qr" *ngIf="!selectedCoupon.qrCodeUrl">
+              <span class="material-icons">qr_code_scanner</span>
+              <p>QR Code unavailable</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupon Code -->
+        <div class="code-section">
+          <h4>
+            <span class="material-icons">confirmation_number</span>
+            Coupon Code
+          </h4>
+          <div class="code-display">
+            <span class="code-text">{{ selectedCoupon.displayCode }}</span>
+            <button class="copy-btn" (click)="copyCouponCode(selectedCoupon.displayCode)">
+              <span class="material-icons">content_copy</span>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Shop Information -->
+        <div class="shop-info-section" *ngIf="selectedCoupon.shopAddress || selectedCoupon.shopContact">
+          <h4>
+            <span class="material-icons">store</span>
+            Shop Information
+          </h4>
+          <div class="info-grid">
+            <div class="info-row" *ngIf="selectedCoupon.shopAddress">
+              <span class="material-icons">location_on</span>
+              <div class="info-content">
+                <span class="info-label">Address</span>
+                <span class="info-value">{{ selectedCoupon.shopAddress }}</span>
+              </div>
+              <button class="action-btn" (click)="openGoogleMaps(selectedCoupon.shopAddress)">
+                <span class="material-icons">directions</span>
+              </button>
+            </div>
+            <div class="info-row" *ngIf="selectedCoupon.shopContact">
+              <span class="material-icons">phone</span>
+              <div class="info-content">
+                <span class="info-label">Contact</span>
+                <span class="info-value">{{ selectedCoupon.shopContact }}</span>
+              </div>
+              <button class="action-btn" (click)="callShop(selectedCoupon.shopContact)">
+                <span class="material-icons">call</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates Information -->
+        <div class="dates-section">
+          <h4>
+            <span class="material-icons">schedule</span>
+            Important Dates
+          </h4>
+          <div class="dates-grid">
+            <div class="date-item">
+              <span class="material-icons">redeem</span>
+              <div>
+                <span class="date-label">Redeemed</span>
+                <span class="date-value">{{ selectedCoupon.redeemedAt | date:'MMM dd, yyyy, hh:mm a' }}</span>
+              </div>
+            </div>
+            <div class="date-item" *ngIf="selectedCoupon.expiresAt">
+              <span class="material-icons">event_busy</span>
+              <div>
+                <span class="date-label">Expires</span>
+                <span class="date-value">{{ selectedCoupon.expiresAt | date:'MMM dd, yyyy' }}</span>
+              </div>
+            </div>
+            <div class="date-item" *ngIf="selectedCoupon.usedAt">
+              <span class="material-icons">done</span>
+              <div>
+                <span class="date-label">Used</span>
+                <span class="date-value">{{ selectedCoupon.usedAt | date:'MMM dd, yyyy, hh:mm a' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="terms-section" *ngIf="selectedCoupon.terms">
+          <h4>
+            <span class="material-icons">gavel</span>
+            Terms & Conditions
+          </h4>
+          <div class="terms-box">
+            <p>{{ selectedCoupon.terms }}</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="action-btn-primary" (click)="downloadQRCode(selectedCoupon)">
+            <span class="material-icons">download</span>
+            Download QR
+          </button>
+          <button class="action-btn-secondary" (click)="printCoupon(selectedCoupon)">
+            <span class="material-icons">print</span>
+            Print
+          </button>
+          <button class="action-btn-secondary" (click)="shareCoupon(selectedCoupon)" *ngIf="canShare">
+            <span class="material-icons">share</span>
+            Share
+          </button>
+        </div>
+
+        <!-- Vendor Instructions -->
+        <div class="vendor-instructions">
+          <div class="instruction-header">
+            <span class="material-icons">info</span>
+            <span>How to use this coupon</span>
+          </div>
+          <ol>
+            <li>Visit {{ selectedCoupon.shopName }}</li>
+            <li>Show this QR code or coupon code to the vendor</li>
+            <li>Vendor will scan or enter the code</li>
+            <li>Enjoy your {{ selectedCoupon.discount }} discount!</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

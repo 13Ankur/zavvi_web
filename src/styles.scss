@@ -1,0 +1,558 @@
+/* ============================================
+   ZAVVI WEB - GLOBAL THEME VARIABLES
+   ============================================ */
+:root {
+  /* Premium Brand Colors */
+  --primary-color: #6C47FF;
+  --primary-rgb: 108, 71, 255;
+  --primary-contrast: #ffffff;
+  --primary-shade: #5e3ee0;
+  --primary-tint: #7b59ff;
+  
+  --secondary-color: #f107a3;
+  --light-color: #f5f5f5;
+  --dark-color: #222222;
+  
+  /* Premium Border Radius */
+  --card-radius: 20px;
+  --banner-radius: 20px;
+  --button-radius: 16px;
+  --badge-radius: 50px;
+  --category-radius: 24px;
+  --input-radius: 12px;
+  
+  /* Premium Shadows */
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.18);
+  --shadow-primary: 0 8px 28px rgba(108, 71, 255, 0.3);
+  --shadow-primary-lg: 0 12px 36px rgba(108, 71, 255, 0.35);
+  
+  /* Gradient Overlays */
+  --gradient-primary: linear-gradient(135deg, #6C47FF 0%, #5b86e5 100%);
+  --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(108, 71, 255, 0.05) 0%, rgba(91, 134, 229, 0.05) 100%);
+  
+  /* Text Colors */
+  --text-dark: #1a1a1a;
+  --text-medium: #666666;
+  --text-light: #9ca3af;
+  --text-lighter: #d1d5db;
+  
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --bg-gradient: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+  
+  /* Status Colors */
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+  
+  /* Premium Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 40px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Font Family */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ============================================
+   DARK MODE THEME VARIABLES
+   ============================================ */
+.dark-mode {
+  /* Premium Brand Colors (same in dark mode) */
+  --primary-color: #6C47FF;
+  --primary-rgb: 108, 71, 255;
+  --primary-contrast: #ffffff;
+  --primary-shade: #7b59ff;
+  --primary-tint: #5e3ee0;
+  
+  --secondary-color: #f107a3;
+  --light-color: #2a2a2a;
+  --dark-color: #0a0a0a;
+  
+  /* Premium Shadows (darker in dark mode) */
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.8);
+  --shadow-primary: 0 8px 28px rgba(108, 71, 255, 0.4);
+  --shadow-primary-lg: 0 12px 36px rgba(108, 71, 255, 0.5);
+  
+  /* Gradient Overlays (adjusted for dark mode) */
+  --gradient-primary: linear-gradient(135deg, #6C47FF 0%, #5b86e5 100%);
+  --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-subtle: linear-gradient(135deg, rgba(108, 71, 255, 0.15) 0%, rgba(91, 134, 229, 0.15) 100%);
+  
+  /* Text Colors (inverted for dark mode) */
+  --text-dark: #f5f5f5;
+  --text-medium: #b3b3b3;
+  --text-light: #808080;
+  --text-lighter: #4d4d4d;
+  
+  /* Background Colors (dark backgrounds) */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #121212;
+  --bg-tertiary: #0f0f0f;
+  --bg-gradient: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
+  
+  /* Status Colors (slightly adjusted for dark mode) */
+  --success-color: #10d876;
+  --error-color: #ff5555;
+  --warning-color: #ffb84d;
+  --info-color: #5b9fff;
+}
+
+/* Smooth theme transition (selective for better performance) */
+html,
+body,
+.main-header,
+.card,
+button,
+a,
+input,
+select,
+textarea {
+  transition: background-color var(--transition-normal), 
+              color var(--transition-normal),
+              border-color var(--transition-normal);
+}
+
+/* Global Styles - Mobile First */
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+  background: var(--bg-secondary);
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Fix for iOS Safari viewport height */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Images responsive by default */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Input fields */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Remove default input styles on iOS */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+textarea {
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* Focus states - Enhanced for Accessibility */
+:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Enhanced focus for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(108, 71, 255, 0.1);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark Mode Scrollbar */
+.dark-mode ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #444;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Accessibility - Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip to main content link - Accessibility */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-color);
+  color: var(--primary-contrast);
+  padding: 12px 24px;
+  text-decoration: none;
+  z-index: 1000;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+  transition: top var(--transition-fast);
+}
+
+.skip-to-main:focus {
+  top: 0;
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Utility Classes */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 32px;
+  }
+}
+
+/* Text Utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Display Utilities */
+.d-none {
+  display: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
+
+/* Mobile-specific utilities */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media screen and (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Smooth Scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Loading State */
+.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Error State */
+.error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+/* Success State */
+.success {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+/* Material Icons Fix */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Touch Feedback */
+.touch-feedback {
+  -webkit-tap-highlight-color: rgba(108, 71, 255, 0.1);
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-width: 2px;
+  }
+  
+  button,
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* ============================================
+   GLOBAL DARK MODE FIXES - Edge Cases
+   ============================================ */
+.dark-mode {
+  // Fix any remaining white backgrounds
+  [style*="background: white"],
+  [style*="background:white"],
+  [style*="background-color: white"],
+  [style*="background-color:white"] {
+    background: var(--bg-primary) !important;
+  }
+
+  // Fix dark text on dark backgrounds
+  [style*="color: #333"],
+  [style*="color:#333"],
+  [style*="color: #2d3748"],
+  [style*="color:#2d3748"],
+  [style*="color: #4a5568"],
+  [style*="color:#4a5568"],
+  [style*="color: #1a1a1a"],
+  [style*="color:#1a1a1a"] {
+    color: var(--text-dark) !important;
+  }
+
+  // Fix medium gray text
+  [style*="color: #666"],
+  [style*="color:#666"] {
+    color: var(--text-medium) !important;
+  }
+
+  // Ensure cards and sections use dark backgrounds
+  .card,
+  section,
+  [class*="card"],
+  [class*="section"] {
+    &[style*="background: white"],
+    &[style*="background:white"] {
+      background: var(--bg-primary) !important;
+    }
+  }
+
+  // Fix input fields
+  input[style*="background: white"],
+  input[style*="background:white"],
+  textarea[style*="background: white"],
+  textarea[style*="background:white"],
+  select[style*="background: white"],
+  select[style*="background:white"] {
+    background: var(--bg-primary) !important;
+    color: var(--text-dark) !important;
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "Zavvi - Exclusive Deals & Discount Offers",
+  "short_name": "Zavvi",
+  "description": "Discover exclusive deals and discount offers on dining, fitness, spa, salon, and more. Save money with Zavvi.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6C47FF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/logos/zavvi-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logos/zavvi-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

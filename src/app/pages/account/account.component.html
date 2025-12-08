@@ -1,0 +1,259 @@
+<div class="account-page" role="main">
+  <div class="page-content">
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-state" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Loading your account...</p>
+    </div>
+    
+    <!-- Account Content -->
+    <div *ngIf="!isLoading && user" class="account-container">
+      
+      <!-- Profile Header Card -->
+      <div class="profile-header-card">
+        <div class="profile-gradient-bg"></div>
+        <div class="profile-content">
+          <div class="profile-avatar">
+            <span class="avatar-text">{{ getUserInitials() }}</span>
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="profile-info">
+            <h1 class="user-name">{{ user.name || 'User' }}</h1>
+            <p class="user-phone">
+              <span class="material-icons">phone</span>
+              {{ user.mobile || 'No phone number' }}
+            </p>
+            <p class="user-email" *ngIf="user.email">
+              <span class="material-icons">email</span>
+              {{ user.email }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid" *ngIf="!loadingStats">
+        <div class="stat-card" routerLink="/redeemed-coupons" [queryParams]="{filter: 'all'}">
+          <div class="stat-icon total">
+            <span class="material-icons">confirmation_number</span>
+          </div>
+          <div class="stat-details">
+            <h3 class="stat-value">{{ stats.totalCoupons }}</h3>
+            <p class="stat-label">Total Coupons</p>
+          </div>
+        </div>
+
+        <div class="stat-card" routerLink="/redeemed-coupons" [queryParams]="{filter: 'active'}">
+          <div class="stat-icon active">
+            <span class="material-icons">stars</span>
+          </div>
+          <div class="stat-details">
+            <h3 class="stat-value">{{ stats.activeCoupons }}</h3>
+            <p class="stat-label">Active Deals</p>
+          </div>
+        </div>
+
+        <div class="stat-card" routerLink="/redeemed-coupons" [queryParams]="{filter: 'used'}">
+          <div class="stat-icon used">
+            <span class="material-icons">check_circle</span>
+          </div>
+          <div class="stat-details">
+            <h3 class="stat-value">{{ stats.usedCoupons }}</h3>
+            <p class="stat-label">Used Coupons</p>
+          </div>
+        </div>
+
+        <div class="stat-card savings">
+          <div class="stat-icon savings-icon">
+            <span class="material-icons">savings</span>
+          </div>
+          <div class="stat-details">
+            <h3 class="stat-value">₹{{ stats.savedAmount }}</h3>
+            <p class="stat-label">Total Savings</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Stats -->
+      <div class="stats-loading" *ngIf="loadingStats">
+        <div class="skeleton-stat"></div>
+        <div class="skeleton-stat"></div>
+        <div class="skeleton-stat"></div>
+        <div class="skeleton-stat"></div>
+      </div>
+
+      <!-- Quick Actions -->
+      <section class="section-card" aria-labelledby="quick-actions-title">
+        <h2 id="quick-actions-title" class="section-title">
+          <span class="material-icons" aria-hidden="true">bolt</span>
+          Quick Actions
+        </h2>
+        <nav class="menu-list" role="navigation" aria-label="Quick actions">
+          <button 
+            class="menu-item" 
+            (click)="navigateToRedeemedCoupons()"
+            (keydown.enter)="navigateToRedeemedCoupons()"
+            (keydown.space)="navigateToRedeemedCoupons(); $event.preventDefault()"
+            [attr.aria-label]="'View your ' + stats.totalCoupons + ' coupons'"
+            type="button">
+            <div class="menu-icon purple" aria-hidden="true">
+              <span class="material-icons">confirmation_number</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">My Coupons</h3>
+              <p class="menu-subtitle">View all your redeemed coupons</p>
+            </div>
+            <span class="material-icons menu-arrow" aria-hidden="true">chevron_right</span>
+          </button>
+
+          <button 
+            class="menu-item" 
+            (click)="navigateToPremiumDeals()"
+            (keydown.enter)="navigateToPremiumDeals()"
+            (keydown.space)="navigateToPremiumDeals(); $event.preventDefault()"
+            aria-label="Browse premium deals"
+            type="button">
+            <div class="menu-icon gold" aria-hidden="true">
+              <span class="material-icons">local_offer</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Premium Deals</h3>
+              <p class="menu-subtitle">Explore exclusive golden offers</p>
+            </div>
+            <span class="material-icons menu-arrow" aria-hidden="true">chevron_right</span>
+          </button>
+
+          <button 
+            class="menu-item" 
+            (click)="navigateToHome()"
+            (keydown.enter)="navigateToHome()"
+            (keydown.space)="navigateToHome(); $event.preventDefault()"
+            aria-label="Go to homepage"
+            type="button">
+            <div class="menu-icon blue" aria-hidden="true">
+              <span class="material-icons">home</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Browse Shops</h3>
+              <p class="menu-subtitle">Discover deals near you</p>
+            </div>
+            <span class="material-icons menu-arrow" aria-hidden="true">chevron_right</span>
+          </button>
+        </nav>
+      </section>
+
+      <!-- Support & Help -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <span class="material-icons">support_agent</span>
+          Support & Help
+        </h2>
+        <div class="menu-list">
+          <button class="menu-item" (click)="callSupport()" aria-label="Call support at 9803902091">
+            <div class="menu-icon green">
+              <span class="material-icons">call</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Call Support</h3>
+              <p class="menu-subtitle">Talk to our support team</p>
+            </div>
+            <span class="material-icons menu-arrow">chevron_right</span>
+          </button>
+
+          <button class="menu-item" (click)="emailSupport()" aria-label="Email support">
+            <div class="menu-icon blue">
+              <span class="material-icons">email</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Email Support</h3>
+              <p class="menu-subtitle">Send us an email</p>
+            </div>
+            <span class="material-icons menu-arrow">chevron_right</span>
+          </button>
+
+          <button class="menu-item" (click)="openHelpCenter()" aria-label="Open help center">
+            <div class="menu-icon orange">
+              <span class="material-icons">help</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Help Center</h3>
+              <p class="menu-subtitle">FAQs and guides</p>
+            </div>
+            <span class="material-icons menu-arrow">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Connect With Us -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <span class="material-icons">connect_without_contact</span>
+          Connect With Us
+        </h2>
+        <div class="social-grid">
+          <button class="social-card instagram" (click)="openSocialMedia('instagram')" aria-label="Follow us on Instagram">
+            <span class="material-icons">photo_camera</span>
+            <span class="social-name">Instagram</span>
+          </button>
+          <button class="social-card facebook" (click)="openSocialMedia('facebook')" aria-label="Follow us on Facebook">
+            <span class="material-icons">facebook</span>
+            <span class="social-name">Facebook</span>
+          </button>
+          <button class="social-card whatsapp" (click)="openSocialMedia('whatsapp')" aria-label="Chat with us on WhatsApp">
+            <span class="material-icons">chat</span>
+            <span class="social-name">WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Legal & Privacy -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <span class="material-icons">policy</span>
+          Legal & Privacy
+        </h2>
+        <div class="menu-list">
+          <button class="menu-item" (click)="openPrivacyPolicy()" aria-label="Read privacy policy">
+            <div class="menu-icon gray">
+              <span class="material-icons">privacy_tip</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Privacy Policy</h3>
+              <p class="menu-subtitle">How we handle your data</p>
+            </div>
+            <span class="material-icons menu-arrow">chevron_right</span>
+          </button>
+
+          <button class="menu-item" (click)="openTermsOfService()" aria-label="Read terms of service">
+            <div class="menu-icon gray">
+              <span class="material-icons">description</span>
+            </div>
+            <div class="menu-content">
+              <h3 class="menu-title">Terms of Service</h3>
+              <p class="menu-subtitle">User agreement and terms</p>
+            </div>
+            <span class="material-icons menu-arrow">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- App Info -->
+      <div class="app-info">
+        <p class="app-version">Zavvi Web • Version 1.0.0</p>
+        <p class="app-copyright">© 2024 Zavvi. All rights reserved.</p>
+      </div>
+
+      <!-- Logout Button -->
+      <button 
+        class="logout-btn" 
+        (click)="logout()"
+        (keydown.enter)="logout()"
+        (keydown.space)="logout(); $event.preventDefault()"
+        aria-label="Logout from your account"
+        type="button">
+        <span class="material-icons" aria-hidden="true">logout</span>
+        Logout
+      </button>
+    </div>
+  </div>
+</div>

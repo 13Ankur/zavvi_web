@@ -1,0 +1,116 @@
+<div class="category-page" role="main">
+  <div class="page-content">
+    <!-- Back Button -->
+    <button 
+      class="back-btn" 
+      (click)="goBack()"
+      (keydown.enter)="goBack()"
+      (keydown.space)="goBack(); $event.preventDefault()"
+      aria-label="Go back to home"
+      type="button">
+      <span class="material-icons" aria-hidden="true">arrow_back</span>
+      <span class="back-text">Back to Home</span>
+    </button>
+
+    <!-- Category Header -->
+    <header class="category-header" *ngIf="categoryName">
+      <h1>{{ categoryName }}</h1>
+      <p>Explore amazing shops in {{ categoryName }}</p>
+    </header>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Discovering amazing deals...</p>
+    </div>
+    
+    <!-- Shops Grid -->
+    <section *ngIf="!isLoading && shops.length > 0" class="shops-grid" role="list" aria-label="Shops in {{ categoryName }}">
+      <article 
+        class="shop-card" 
+        *ngFor="let shop of shops; trackBy: trackByShopId" 
+        [attr.tabindex]="0"
+        (click)="navigateToShop(shop._id)"
+        (keydown.enter)="navigateToShop(shop._id)"
+        (keydown.space)="navigateToShop(shop._id); $event.preventDefault()"
+        role="listitem"
+        [attr.aria-label]="'View ' + (shop.title || shop.name || 'Shop') + ' details'">
+        <div class="shop-image">
+          <img 
+            [src]="getShopLogo(shop)" 
+            [alt]="(shop.title || shop.name || 'Shop') + ' logo'"
+            (error)="onImageError($event, shop.title || shop.name || 'Shop')"
+            loading="lazy"
+            [attr.data-shop-id]="shop._id">
+        </div>
+        <div class="shop-content">
+          <h3 class="shop-name">{{ shop.title || shop.name }}</h3>
+          <p class="description" *ngIf="shop.description">{{ shop.description }}</p>
+          <button 
+            [routerLink]="['/shop', shop._id]" 
+            class="view-btn"
+            type="button"
+            [attr.aria-label]="'View ' + (shop.title || shop.name) + ' shop details'">
+            <span class="material-icons" aria-hidden="true">store</span>
+            View Shop
+          </button>
+        </div>
+      </article>
+    </section>
+    
+    <!-- Empty State - No Shops Found -->
+    <div *ngIf="!isLoading && shops.length === 0" class="empty-state">
+      <div class="empty-content">
+        <!-- Animated Icon -->
+        <div class="empty-icon-wrapper">
+          <span class="material-icons empty-icon">storefront</span>
+          <div class="icon-circle circle-1"></div>
+          <div class="icon-circle circle-2"></div>
+          <div class="icon-circle circle-3"></div>
+        </div>
+        
+        <!-- Positive Message -->
+        <h2 class="empty-title">New Deals Coming Soon!</h2>
+        <p class="empty-message">
+          We're working hard to bring you amazing deals in <strong>{{ categoryName || 'this category' }}</strong>.
+          <br>Check back soon or explore other categories!
+        </p>
+        
+        <!-- Action Buttons -->
+        <div class="empty-actions">
+          <button class="action-btn action-btn-primary" routerLink="/">
+            <span class="material-icons">explore</span>
+            Explore All Categories
+          </button>
+          <button class="action-btn action-btn-secondary" (click)="refreshPage()">
+            <span class="material-icons">refresh</span>
+            Refresh Page
+          </button>
+        </div>
+        
+        <!-- Suggestions -->
+        <div class="suggestions">
+          <p class="suggestions-title">
+            <span class="material-icons">lightbulb</span>
+            Meanwhile, you can:
+          </p>
+          <ul class="suggestions-list">
+            <li>
+              <span class="material-icons">location_on</span>
+              Try changing your location
+            </li>
+            <li>
+              <span class="material-icons">favorite</span>
+              Browse our featured offers
+            </li>
+            <li>
+              <span class="material-icons">notifications</span>
+              Get notified when new deals arrive
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

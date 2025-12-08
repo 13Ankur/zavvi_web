@@ -1,0 +1,72 @@
+<div class="not-found-page" role="main">
+  <div class="content">
+    <!-- Animated 404 -->
+    <div class="error-code" aria-hidden="true">
+      <span class="digit">4</span>
+      <div class="icon-wrapper">
+        <span class="material-icons search-icon">search_off</span>
+        <div class="circle"></div>
+      </div>
+      <span class="digit">4</span>
+    </div>
+    
+    <!-- Message -->
+    <h1>Oops! Page Not Found</h1>
+    <p class="message">
+      The page you're looking for doesn't exist or has been moved.
+      <br>
+      Don't worry, let's get you back on track!
+    </p>
+    
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button 
+        class="action-btn primary" 
+        (click)="goHome()"
+        (keydown.enter)="goHome()"
+        (keydown.space)="goHome(); $event.preventDefault()"
+        aria-label="Go to home page"
+        type="button">
+        <span class="material-icons" aria-hidden="true">home</span>
+        Go to Home
+      </button>
+      <button 
+        class="action-btn secondary" 
+        (click)="goBack()"
+        (keydown.enter)="goBack()"
+        (keydown.space)="goBack(); $event.preventDefault()"
+        aria-label="Go back to previous page"
+        type="button">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        Go Back
+      </button>
+    </div>
+    
+    <!-- Quick Links -->
+    <nav class="quick-links" aria-label="Quick navigation links">
+      <p class="quick-links-title">
+        <span class="material-icons" aria-hidden="true">link</span>
+        Quick Links
+      </p>
+      <div class="links-grid" role="list">
+        <a routerLink="/" class="link-card" role="listitem" aria-label="Go to home page">
+          <span class="material-icons" aria-hidden="true">home</span>
+          <span>Home</span>
+        </a>
+        <a routerLink="/deals" class="link-card" role="listitem" aria-label="Browse premium deals">
+          <span class="material-icons" aria-hidden="true">local_offer</span>
+          <span>Premium Deals</span>
+        </a>
+        <a routerLink="/account" class="link-card" role="listitem" aria-label="View my account">
+          <span class="material-icons" aria-hidden="true">person</span>
+          <span>My Account</span>
+        </a>
+        <a routerLink="/redeemed-coupons" class="link-card" role="listitem" aria-label="View my coupons">
+          <span class="material-icons" aria-hidden="true">confirmation_number</span>
+          <span>My Coupons</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</div>
+

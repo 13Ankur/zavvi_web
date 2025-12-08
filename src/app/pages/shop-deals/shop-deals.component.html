@@ -1,0 +1,199 @@
+<div class="shop-deals-page" role="main">
+  <div class="page-content">
+    <!-- Header -->
+    <header class="page-header">
+      <button 
+        class="back-btn" 
+        (click)="goBack()"
+        (keydown.enter)="goBack()"
+        (keydown.space)="goBack(); $event.preventDefault()"
+        aria-label="Go back to shop details"
+        type="button">
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
+        Back
+      </button>
+      <h1 *ngIf="shopName">{{ shopName }} - Deals</h1>
+      <h1 *ngIf="!shopName">Deals</h1>
+    </header>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <p>Loading deals...</p>
+    </div>
+
+    <!-- Not Found -->
+    <div *ngIf="dealsNotFound && !isLoading" class="not-found">
+      <div class="empty-icon-wrapper">
+        <span class="material-icons empty-icon">inventory_2</span>
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+      </div>
+      <h2>No Deals Found</h2>
+      <p>This shop doesn't have any active deals at the moment. Check back soon!</p>
+      <button class="btn-primary" (click)="goBack()">
+        <span class="material-icons">arrow_back</span>
+        Go Back
+      </button>
+    </div>
+
+    <!-- Deals Grid -->
+    <section *ngIf="!isLoading && deals.length > 0" class="deals-grid" role="list" [attr.aria-label]="'Deals for ' + shopName">
+      <article 
+        class="deal-card" 
+        *ngFor="let deal of deals; trackBy: trackByDealId" 
+        role="listitem"
+        [class.golden-deal-card]="deal.isGoldenCoupon"
+        (click)="claimDeal(deal)"
+        (keydown.enter)="claimDeal(deal)"
+        (keydown.space)="claimDeal(deal); $event.preventDefault()"
+        [attr.tabindex]="0"
+        [attr.aria-label]="deal.title + ' - ' + deal.discount + (deal.isGoldenCoupon ? ', Golden offer' : '')">
+        <!-- Golden Badge (Top Left) -->
+        <div class="golden-crown-badge" *ngIf="deal.isGoldenCoupon">
+          <span class="material-icons">star</span>
+          <span>GOLDEN</span>
+        </div>
+        
+        <!-- Discount Badge (Top Right) - Hidden for Golden Coupons -->
+        <div class="discount-badge" *ngIf="!deal.isGoldenCoupon">{{ deal.discount }}</div>
+
+        <!-- Deal Content -->
+        <div class="deal-content">
+          <h3 class="deal-title">{{ deal.title }}</h3>
+          <p class="deal-description">{{ deal.description }}</p>
+          
+          <!-- One-Time Use Badge (Only for Golden Coupons) -->
+          <div class="one-time-use-badge" *ngIf="deal.isGoldenCoupon">
+            <span class="material-icons">info</span>
+            <span>One-Time Use Only • Limited to {{ deal.maxRedemptions || '∞' }} Users</span>
+          </div>
+          
+          <!-- View Details Link -->
+          <div class="view-details-link">
+            <span>{{ deal.isGoldenCoupon ? 'Claim Golden Offer' : 'View Details' }}</span>
+            <span class="material-icons">arrow_forward</span>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</div>
+
+<!-- QR Code Modal -->
+<div class="qr-modal" 
+     [class.open]="isQRModalOpen" 
+     role="dialog" 
+     aria-modal="true" 
+     aria-labelledby="qr-modal-title"
+     [style.display]="isQRModalOpen ? 'flex' : 'none'">
+  <div class="modal-backdrop" (click)="closeQRModal()"></div>
+  
+  <div class="modal-content">
+    <button class="close-btn" (click)="closeQRModal()" aria-label="Close modal">
+      <span class="material-icons">close</span>
+    </button>
+
+    <!-- Loading State -->
+    <div *ngIf="isGeneratingCoupon && selectedDeal" class="generating-state">
+      <div class="spinner-large"></div>
+      <h2>Generating Your Coupon...</h2>
+      <p>Please wait a moment</p>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!isGeneratingCoupon && selectedDeal && qrCodeUrl" class="qr-success">
+      <!-- Header -->
+      <div class="qr-header">
+        <div class="success-icon-wrapper">
+          <span class="material-icons success-icon">check_circle</span>
+        </div>
+        <h2 id="qr-modal-title">Coupon Generated!</h2>
+        <p class="subtitle">Show this QR code to the vendor to redeem your offer</p>
+      </div>
+
+      <!-- Golden Badge -->
+      <div class="golden-info-banner" *ngIf="selectedDeal.isGoldenCoupon">
+        <span class="material-icons">stars</span>
+        <span>Premium Golden Offer • One-time use only</span>
+      </div>
+
+      <!-- QR Code Card -->
+      <div class="qr-card">
+        <div class="qr-code-wrapper" *ngIf="qrCodeUrl">
+          <img [src]="qrCodeUrl" alt="QR Code" class="qr-code-image">
+        </div>
+        <div class="qr-code-placeholder" *ngIf="!qrCodeUrl">
+          <span class="material-icons">qr_code_2</span>
+          <p>QR code not available</p>
+        </div>
+        <div class="coupon-code-box">
+          <span class="code-label">Coupon Code</span>
+          <span class="code-value">{{ couponCode }}</span>
+          <button class="copy-btn" (click)="copyCode()" aria-label="Copy coupon code">
+            <span class="material-icons">content_copy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Deal Info -->
+      <div class="deal-info-card">
+        <h3>{{ selectedDeal.title }}</h3>
+        <div class="deal-discount">{{ selectedDeal.discount }}</div>
+        <p class="deal-valid">Valid until: {{ selectedDeal.validUntil }}</p>
+      </div>
+
+      <!-- User Info -->
+      <div class="info-section">
+        <div class="info-item">
+          <span class="material-icons">verified_user</span>
+          <div class="info-details">
+            <span class="info-label">Status</span>
+            <span class="info-value valid">Active</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="material-icons">person</span>
+          <div class="info-details">
+            <span class="info-label">Redeemed by</span>
+            <span class="info-value">{{ userName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vendor Contact -->
+      <button class="vendor-contact-btn" *ngIf="vendorContact" (click)="callVendor()">
+        <span class="material-icons">call</span>
+        <div class="contact-details">
+          <span class="contact-label">Need Help? Call Vendor</span>
+          <span class="contact-number">{{ vendorContact }}</span>
+        </div>
+        <span class="material-icons">chevron_right</span>
+      </button>
+
+      <!-- Important Note -->
+      <div class="important-note">
+        <div class="note-header">
+          <span class="material-icons">info</span>
+          <span class="note-title">Important</span>
+        </div>
+        <p>
+          This coupon can only be used once by <strong>{{ userName }}</strong>. 
+          Present this QR code to the vendor at the time of purchase.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-actions">
+        <button class="action-btn secondary" (click)="downloadQRCode()">
+          <span class="material-icons">download</span>
+          Download QR
+        </button>
+        <button class="action-btn primary" (click)="navigateToMyCoupons()">
+          <span class="material-icons">confirmation_number</span>
+          My Coupons
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

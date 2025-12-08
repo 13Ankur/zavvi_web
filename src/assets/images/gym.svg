@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gymGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#gymGrad)"/>
+  <rect x="170" y="80" width="60" height="80" fill="white" opacity="0.3" rx="5"/>
+  <rect x="175" y="85" width="50" height="70" fill="white" opacity="0.5" rx="3"/>
+  <circle cx="200" cy="180" r="15" fill="white" opacity="0.4"/>
+  <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="24" fill="#222" text-anchor="middle" dy=".3em" font-weight="bold">Fitness Pro</text>
+  <text x="50%" y="80%" font-family="Arial, sans-serif" font-size="18" fill="#6C47FF" text-anchor="middle" dy=".3em" font-weight="600">20% OFF</text>
+</svg>

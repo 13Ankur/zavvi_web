@@ -1,0 +1,606 @@
+// ============================================
+// MOBILE-FIRST RESPONSIVE DESIGN
+// ============================================
+
+// Mobile Optimization (Default - 320px to 767px)
+@media (max-width: 767px) {
+  .home-page {
+    overflow-x: hidden;
+  }
+
+  // Banner Section - Mobile
+  .banner-section {
+    height: 250px !important;
+    margin-top: 0 !important; // No margin, location bar handles spacing
+    
+    .banner-content {
+      padding: 0 16px !important;
+      
+      h1,
+      .shop-title-banner {
+        font-size: 1.75rem !important;
+        margin-bottom: 12px !important;
+      }
+      
+      .discount {
+        font-size: 1.25rem !important;
+        margin-bottom: 16px !important;
+      }
+      
+      .banner-btn {
+        padding: 10px 20px !important;
+        font-size: 0.875rem !important;
+      }
+    }
+    
+    // Mobile Navigation Arrows
+    .banner-navigation {
+      padding: 0 8px !important;
+    }
+    
+    .nav-arrow {
+      width: 40px !important;
+      height: 40px !important;
+      background: rgba(255, 255, 255, 0.95) !important;
+      
+      .material-icons {
+        font-size: 26px !important;
+      }
+      
+      &:hover {
+        transform: scale(1.05) !important;
+      }
+    }
+    
+    // Mobile Dots - Compact
+    .banner-dots {
+      bottom: 12px !important;
+      gap: 5px !important;
+      padding: 4px 8px !important;
+      background: rgba(0, 0, 0, 0.25) !important;
+      border-radius: 12px !important;
+      backdrop-filter: blur(8px) !important;
+      
+      .dot {
+        width: 5px !important;
+        height: 5px !important;
+        background: rgba(255, 255, 255, 0.6) !important;
+        box-shadow: none !important;
+        
+        &.active {
+          width: 16px !important;
+          height: 5px !important;
+          border-radius: 2.5px !important;
+          background: white !important;
+          box-shadow: none !important;
+        }
+      }
+    }
+  }
+
+  // Main Content
+  .main-content {
+    padding: 20px 12px !important;
+  }
+
+  // Categories Section
+  .categories-section {
+    .section-title {
+      font-size: 1.5rem !important;
+      margin-bottom: 8px !important;
+      padding: 0 4px !important;
+    }
+    
+    .section-subtitle {
+      font-size: 0.875rem !important;
+      margin-bottom: 20px !important;
+      padding: 0 4px !important;
+    }
+    
+    .categories-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+      gap: 12px !important;
+      padding: 0 !important;
+    }
+    
+    .category-card {
+      padding: 16px 8px !important;
+      min-height: 130px !important;
+      border-radius: 16px !important;
+      
+      .category-icon-wrapper {
+        width: 60px !important;
+        height: 60px !important;
+        margin: 0 auto 12px !important;
+        background: linear-gradient(135deg, rgba(108, 71, 255, 0.15), rgba(91, 134, 229, 0.15)) !important;
+        
+        .category-material-icon {
+          font-size: 30px !important;
+        }
+      }
+      
+      h3 {
+        font-size: 0.8125rem !important;
+        line-height: 1.3 !important;
+        font-weight: 600 !important;
+        margin: 0 0 4px 0 !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      }
+      
+      .offer-count {
+        font-size: 0.6875rem !important;
+        margin-top: 4px !important;
+        opacity: 0.8;
+      }
+      
+      .category-badge {
+        font-size: 0.625rem !important;
+        padding: 3px 8px !important;
+        top: 6px !important;
+        right: 6px !important;
+        border-radius: 12px !important;
+      }
+      
+      // Reduce hover effects on mobile
+      &:hover {
+        transform: translateY(-4px) !important;
+        
+        .category-icon-wrapper {
+          transform: scale(1.05) !important;
+        }
+        
+        .category-material-icon {
+          transform: scale(1.05) rotate(3deg) !important;
+        }
+      }
+      
+      // Active state for touch
+      &:active {
+        transform: scale(0.95) !important;
+      }
+    }
+  }
+
+  // Offers Section
+  .offers-section {
+    .section-title {
+      font-size: 1.5rem !important;
+      margin-bottom: 8px !important;
+    }
+    
+    .section-subtitle {
+      font-size: 0.875rem !important;
+      margin-bottom: 20px !important;
+    }
+    
+    .offers-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+    
+    .offer-card {
+      .offer-image {
+        height: 180px !important;
+        
+        .discount-badge {
+          font-size: 0.75rem !important;
+          padding: 4px 8px !important;
+          top: 8px !important;
+          left: 8px !important;
+          border-radius: 4px !important;
+        }
+      }
+      
+      .offer-content {
+        padding: 12px !important;
+        
+        .offer-title {
+          font-size: 1rem !important;
+          margin-bottom: 6px !important;
+        }
+        
+        .category-name {
+          font-size: 0.75rem !important;
+          margin-bottom: 4px !important;
+        }
+        
+        .offer-location {
+          font-size: 0.75rem !important;
+        }
+      }
+    }
+  }
+
+  // Banner Dots - Handled in mobile section above
+
+  // No Offers State
+  .no-offers {
+    padding: 40px 16px !important;
+    
+    svg {
+      width: 60px !important;
+      height: 60px !important;
+    }
+    
+    p {
+      font-size: 0.875rem !important;
+    }
+    
+    .hint {
+      font-size: 0.75rem !important;
+    }
+  }
+}
+
+// Small Phones (320px to 375px)
+@media (max-width: 375px) {
+  .main-content {
+    padding: 16px 10px !important;
+  }
+
+  .banner-section {
+    height: 200px !important;
+    
+    .banner-content {
+      h1,
+      .shop-title-banner {
+        font-size: 1.5rem !important;
+      }
+      
+      .discount {
+        font-size: 1.125rem !important;
+      }
+      
+      .banner-btn {
+        padding: 8px 16px !important;
+        font-size: 0.8125rem !important;
+      }
+    }
+    
+    // Smaller Navigation Arrows on small phones
+    .banner-navigation {
+      padding: 0 4px;
+    }
+    
+    .nav-arrow {
+      width: 36px;
+      height: 36px;
+      
+      .material-icons {
+        font-size: 24px;
+      }
+    }
+    
+    // Smaller Dots on small phones
+    .banner-dots {
+      bottom: 10px !important;
+      gap: 4px !important;
+      padding: 3px 6px !important;
+      
+      .dot {
+        width: 4px !important;
+        height: 4px !important;
+        
+        &.active {
+          width: 12px !important;
+          height: 4px !important;
+          border-radius: 2px !important;
+        }
+      }
+    }
+  }
+
+  .categories-section {
+    .section-title {
+      font-size: 1.25rem !important;
+    }
+    
+    .section-subtitle {
+      font-size: 0.8125rem !important;
+    }
+    
+    .categories-grid {
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)) !important;
+      gap: 8px !important;
+    }
+    
+    .category-card {
+      padding: 12px 6px !important;
+      min-height: 110px !important;
+      border-radius: 12px !important;
+      
+      .category-icon-wrapper {
+        width: 50px !important;
+        height: 50px !important;
+        margin-bottom: 8px !important;
+        
+        .category-material-icon {
+          font-size: 24px !important;
+        }
+      }
+      
+      h3 {
+        font-size: 0.75rem !important;
+        line-height: 1.2 !important;
+      }
+      
+      .offer-count {
+        font-size: 0.625rem !important;
+      }
+      
+      .category-badge {
+        font-size: 0.5625rem !important;
+        padding: 2px 6px !important;
+      }
+    }
+  }
+
+  .main-content {
+    padding: 16px 10px !important;
+  }
+}
+
+// Tablets (768px to 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .banner-section {
+    height: 350px !important;
+    margin-top: 70px !important;
+    
+    .banner-content {
+      h1,
+      .shop-title-banner {
+        font-size: 2.5rem !important;
+      }
+      
+      .discount {
+        font-size: 1.75rem !important;
+      }
+      
+      .banner-btn {
+        padding: 12px 28px !important;
+        font-size: 1rem !important;
+      }
+    }
+  }
+
+  .main-content {
+    padding: 40px 24px !important;
+  }
+
+  .categories-section {
+    .section-title {
+      font-size: 2rem !important;
+    }
+    
+    .section-subtitle {
+      font-size: 1rem !important;
+    }
+    
+    .categories-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+      gap: 20px !important;
+    }
+    
+    .category-card {
+      padding: 20px 16px !important;
+      
+      .category-material-icon {
+        font-size: 42px !important;
+      }
+      
+      h3 {
+        font-size: 0.95rem !important;
+      }
+    }
+  }
+
+  .offers-section {
+    .offers-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 20px !important;
+    }
+  }
+}
+
+// Desktop (1024px to 1439px)
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .banner-section {
+    height: 400px !important;
+  }
+
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 32px !important;
+  }
+
+  .categories-section {
+    .categories-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+      gap: 24px !important;
+    }
+  }
+
+  .offers-section {
+    .offers-grid {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 24px !important;
+    }
+  }
+}
+
+// Large Desktop (1440px+)
+@media (min-width: 1440px) {
+  .banner-section {
+    height: 500px !important;
+  }
+
+  .main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 40px !important;
+  }
+
+  .categories-section {
+    .categories-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+      gap: 28px !important;
+    }
+    
+    .category-card {
+      .category-material-icon {
+        font-size: 52px !important;
+      }
+    }
+  }
+
+  .offers-section {
+    .offers-grid {
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 28px !important;
+    }
+  }
+}
+
+// Landscape Orientation (Mobile)
+@media (max-height: 500px) and (orientation: landscape) {
+  .banner-section {
+    height: 100vh !important;
+    margin-top: 0 !important;
+    
+    .banner-content {
+      h1,
+      .shop-title-banner {
+        font-size: 1.5rem !important;
+      }
+      
+      .discount {
+        font-size: 1.125rem !important;
+      }
+    }
+  }
+
+  .main-content {
+    padding: 20px 16px !important;
+  }
+
+  .categories-section {
+    .section-title {
+      font-size: 1.25rem !important;
+    }
+    
+    .categories-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+    }
+  }
+}
+
+// Touch Device Optimizations
+@media (hover: none) and (pointer: coarse) {
+  // Larger touch targets (exclude banner dots)
+  .category-card,
+  .offer-card,
+  .banner-btn,
+  button:not(.dot) {
+    min-height: 44px !important;
+  }
+  
+  // Banner dots should remain small
+  .banner-dots .dot {
+    min-height: auto !important;
+  }
+
+  .category-card {
+    &:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+  }
+
+  .offer-card {
+    &:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
+    }
+  }
+
+  // Remove hover effects on touch devices
+  .category-card:hover,
+  .offer-card:hover {
+    transform: none !important;
+  }
+}
+
+// High DPI Screens
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+// Safe Areas for Notched Devices (iPhone X, etc.)
+@supports (padding: max(0px)) {
+  .home-page {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+  
+  .banner-section {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+  
+  .main-content {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+// Prevent text selection on touch devices
+@media (hover: none) {
+  .category-card,
+  .offer-card {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+}
+
+// Fix for iOS Safari bottom bar
+@supports (-webkit-touch-callout: none) {
+  .home-page {
+    min-height: -webkit-fill-available;
+  }
+}
+
+// Accessibility - Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .banner-slide {
+    transition: none !important;
+  }
+  
+  .category-card,
+  .offer-card {
+    transition: none !important;
+  }
+}
+
+// Dark Mode Support (Future Enhancement)
+@media (prefers-color-scheme: dark) {
+  // Add dark mode styles if needed in the future
+}
+

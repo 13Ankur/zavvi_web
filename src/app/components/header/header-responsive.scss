@@ -1,0 +1,440 @@
+// Header Responsive Styles
+
+// Mobile (320px to 767px)
+@media (max-width: 767px) {
+  .main-header {
+    height: 56px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .header-container {
+    padding: 0 8px !important;
+    gap: 8px !important;
+  }
+
+  // Search bar - Keep visible but optimized for mobile
+  .header-search {
+    flex: 1 !important;
+    max-width: none !important;
+    
+    .search-input {
+      width: 100% !important;
+      padding: 8px 40px 8px 12px !important;
+      font-size: 0.875rem !important;
+      border-radius: 20px !important;
+      background: white !important;
+      color: #333 !important;
+      border: 2px solid rgba(0, 0, 0, 0.1) !important;
+      font-weight: 500 !important;
+      -webkit-text-fill-color: #333 !important;
+      opacity: 1 !important;
+      
+      &::placeholder {
+        color: #999 !important;
+        opacity: 1 !important;
+        font-size: 0.8125rem !important;
+      }
+      
+      &:focus {
+        border-color: #6C47FF !important;
+        box-shadow: 0 0 0 2px rgba(108, 71, 255, 0.1) !important;
+        background: white !important;
+        color: #333 !important;
+      }
+    }
+    
+    .search-btn {
+      width: 32px !important;
+      height: 32px !important;
+      right: 4px !important;
+      
+      svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
+    }
+  }
+
+  // Logo - Compact
+  .header-logo {
+    a {
+      gap: 6px !important;
+    }
+
+    .logo-icon {
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 8px !important;
+    }
+
+    .logo-text {
+      font-size: 1.125rem !important;
+    }
+  }
+
+  // Location - Compact
+  .header-location {
+    display: none !important; // Hide on mobile, show in content area instead
+  }
+
+  // Navigation - Icon only mode
+  .header-nav {
+    flex: 1;
+    justify-content: flex-end;
+    gap: 4px !important;
+
+    a {
+      padding: 6px 8px !important;
+      font-size: 0.7rem !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+      min-width: 60px !important;
+
+      .material-icons {
+        font-size: 20px !important;
+      }
+
+      .nav-text {
+        font-size: 0.625rem !important;
+        white-space: nowrap !important;
+      }
+    }
+
+    // User menu compact - clickable on mobile
+    .user-menu {
+      position: relative;
+      padding: 6px 8px !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+      cursor: pointer !important;
+
+      .user-icon {
+        font-size: 20px !important;
+      }
+
+      .user-info {
+        display: none !important; // Hide user details on mobile header
+      }
+
+      .account-link,
+      .logout-btn {
+        display: none !important; // Hide in header, show in dropdown
+      }
+      
+      // Mobile Dropdown Menu
+      .mobile-dropdown {
+        display: block !important;
+        position: fixed !important;
+        top: 56px !important;
+        right: 0 !important;
+        width: 280px !important;
+        max-width: calc(100vw - 16px) !important;
+        background: white !important;
+        border-radius: 0 0 0 16px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        animation: slideDown 0.2s ease !important;
+        
+        .dropdown-header {
+          background: linear-gradient(135deg, #6C47FF, #5b86e5);
+          padding: 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: white;
+          
+          .material-icons {
+            font-size: 40px;
+          }
+          
+          .dropdown-user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            
+            .dropdown-name {
+              font-weight: 700;
+              font-size: 1rem;
+            }
+            
+            .dropdown-phone {
+              font-size: 0.8125rem;
+              opacity: 0.9;
+            }
+          }
+        }
+        
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 16px;
+          width: 100%;
+          border: none;
+          background: white;
+          color: #333;
+          font-size: 0.9375rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          text-decoration: none;
+          
+          .material-icons {
+            font-size: 22px;
+            color: #6C47FF;
+          }
+          
+          &:hover, &:active {
+            background: rgba(108, 71, 255, 0.05);
+          }
+          
+          &:last-child {
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            color: #e53e3e;
+            
+            .material-icons {
+              color: #e53e3e;
+            }
+          }
+        }
+      }
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .register-btn {
+      background: linear-gradient(135deg, #6C47FF, #5b86e5) !important;
+      color: white !important;
+      border-radius: 8px !important;
+    }
+  }
+}
+
+// Small Phones (320px to 375px)
+@media (max-width: 375px) {
+  .main-header {
+    height: 52px !important;
+  }
+
+  .header-container {
+    padding: 0 8px !important;
+    gap: 4px !important;
+  }
+
+  .header-logo {
+    .logo-icon {
+      width: 28px !important;
+      height: 28px !important;
+    }
+
+    .logo-text {
+      font-size: 1rem !important;
+    }
+  }
+  
+  .header-search {
+    .search-input {
+      font-size: 0.8125rem !important;
+      padding: 7px 36px 7px 10px !important;
+      border-radius: 18px !important;
+      
+      &::placeholder {
+        font-size: 0.75rem !important;
+      }
+    }
+    
+    .search-btn {
+      width: 28px !important;
+      height: 28px !important;
+      
+      svg {
+        width: 16px !important;
+        height: 16px !important;
+      }
+    }
+  }
+
+  .header-nav {
+    gap: 2px !important;
+
+    a {
+      padding: 4px 6px !important;
+      min-width: 44px !important;
+
+      .material-icons {
+        font-size: 18px !important;
+      }
+
+      .nav-text {
+        font-size: 0.5625rem !important;
+      }
+    }
+
+    // Show only icons on very small screens
+    .nav-text {
+      display: none !important;
+    }
+
+    .register-btn .nav-text {
+      display: none !important;
+    }
+  }
+}
+
+// Very small phones (< 320px)
+@media (max-width: 320px) {
+  .header-container {
+    padding: 0 6px !important;
+  }
+  
+  .header-search .search-input {
+    font-size: 0.75rem !important;
+    padding: 6px 32px 6px 8px !important;
+    
+    &::placeholder {
+      font-size: 0.6875rem !important;
+    }
+  }
+}
+
+// Tablets (768px to 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .main-header {
+    height: 65px !important;
+  }
+
+  .header-container {
+    padding: 0 20px !important;
+    gap: 16px !important;
+  }
+
+  .header-search {
+    max-width: 300px !important;
+  }
+
+  .header-logo {
+    .logo-icon {
+      width: 36px !important;
+      height: 36px !important;
+    }
+
+    .logo-text {
+      font-size: 1.25rem !important;
+    }
+  }
+
+  .header-nav {
+    gap: 6px !important;
+
+    a {
+      padding: 8px 12px !important;
+      font-size: 0.875rem !important;
+    }
+  }
+}
+
+// Desktop (1024px+)
+@media (min-width: 1024px) {
+  .header {
+    height: 70px !important;
+    padding: 0 32px !important;
+  }
+}
+
+// Landscape Mode (Mobile)
+@media (max-height: 500px) and (orientation: landscape) {
+  .header {
+    height: 50px !important;
+    
+    .logo {
+      img {
+        height: 30px !important;
+      }
+    }
+    
+    .nav-links,
+    .auth-buttons {
+      a, button {
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+      }
+    }
+  }
+}
+
+// Touch Devices
+@media (hover: none) and (pointer: coarse) {
+  .header {
+    .nav-links a,
+    .user-button,
+    .auth-buttons button {
+      min-height: 44px !important;
+      min-width: 44px !important;
+    }
+    
+    .nav-links a:active,
+    .user-button:active,
+    .auth-buttons button:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+  }
+}
+
+// Safe Areas for Notched Devices
+@supports (padding: max(0px)) {
+  .header {
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: max(12px, env(safe-area-inset-right)) !important;
+  }
+}
+
+// Dark Mode Overrides for Responsive Header
+.dark-mode {
+  @media (max-width: 767px) {
+    .header-search .search-input {
+      background: var(--bg-primary) !important;
+      color: var(--text-dark) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      -webkit-text-fill-color: var(--text-dark) !important;
+
+      &::placeholder {
+        color: var(--text-light) !important;
+      }
+
+      &:focus {
+        background: var(--bg-primary) !important;
+        color: var(--text-dark) !important;
+      }
+    }
+
+    .user-menu .mobile-dropdown {
+      background: var(--bg-primary) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
+
+      .dropdown-item {
+        background: var(--bg-primary) !important;
+        color: var(--text-dark) !important;
+
+        &:hover, &:active {
+          background: rgba(108, 71, 255, 0.1) !important;
+        }
+
+        &:last-child {
+          border-top-color: rgba(255, 255, 255, 0.1) !important;
+        }
+      }
+    }
+  }
+}
+

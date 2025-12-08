@@ -1,0 +1,114 @@
+<header class="main-header">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="header-logo">
+      <a routerLink="/" aria-label="Zavvi Home">
+        <img src="logos/zavvi-logo.png" alt="Zavvi Logo" class="logo-icon" onerror="this.src='https://ui-avatars.com/api/?name=Z&size=200&background=6C47FF&color=ffffff&bold=true&format=png&rounded=true'">
+        <span class="logo-text">Zavvi</span>
+      </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="header-search">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+        placeholder="Search for shops, deals, categories..."
+        class="search-input">
+      <button class="search-btn" (click)="onSearch()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Location Selector -->
+    <div class="header-location" *ngIf="locations.length > 0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+      <select 
+        [(ngModel)]="selectedLocationId"
+        (change)="onLocationChange($any($event.target).value)"
+        class="location-select">
+        <option value="" disabled>Select Location</option>
+        <option *ngFor="let location of locations" [value]="location.id">
+          {{ location.name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="header-nav">
+      <!-- Dark Mode Toggle -->
+      <button class="theme-toggle" (click)="toggleDarkMode()" [attr.aria-label]="isDarkMode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'" title="Toggle dark mode">
+        <span class="material-icons" *ngIf="isDarkMode() === 'dark'">light_mode</span>
+        <span class="material-icons" *ngIf="isDarkMode() !== 'dark'">dark_mode</span>
+      </button>
+      
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <span class="material-icons">home</span>
+        <span class="nav-text">Home</span>
+      </a>
+      
+      <a routerLink="/about" routerLinkActive="active">
+        <span class="material-icons">info</span>
+        <span class="nav-text">About Us</span>
+      </a>
+      
+      <ng-container *ngIf="isLoggedIn; else notLoggedIn">
+        <a routerLink="/redeemed-coupons" routerLinkActive="active">
+          <span class="material-icons">confirmation_number</span>
+          <span class="nav-text">My Coupons</span>
+        </a>
+        <div class="user-menu" (click)="toggleMobileMenu()" [class.menu-open]="isMobileMenuOpen">
+          <span class="material-icons user-icon">account_circle</span>
+          <div class="user-info">
+            <span class="user-name">{{ currentUser?.name || 'User' }}</span>
+            <span class="user-phone" *ngIf="currentUser?.mobile">{{ currentUser?.mobile }}</span>
+          </div>
+          <a routerLink="/account" class="account-link" (click)="closeMobileMenu()">Profile</a>
+          <button class="logout-btn" (click)="logout()">
+            <span class="material-icons">logout</span>
+            Logout
+          </button>
+          
+          <!-- Mobile Dropdown Menu -->
+          <div class="mobile-dropdown" *ngIf="isMobileMenuOpen" (click)="$event.stopPropagation()">
+            <div class="dropdown-header">
+              <span class="material-icons">account_circle</span>
+              <div class="dropdown-user-info">
+                <span class="dropdown-name">{{ currentUser?.name || 'User' }}</span>
+                <span class="dropdown-phone">{{ currentUser?.mobile }}</span>
+              </div>
+            </div>
+            <a routerLink="/account" class="dropdown-item" (click)="closeMobileMenu()">
+              <span class="material-icons">person</span>
+              My Profile
+            </a>
+            <button class="dropdown-item" (click)="logout()">
+              <span class="material-icons">logout</span>
+              Logout
+            </button>
+          </div>
+        </div>
+      </ng-container>
+      
+      <ng-template #notLoggedIn>
+        <a routerLink="/login" routerLinkActive="active" class="login-btn">
+          <span class="material-icons">login</span>
+          <span class="nav-text">Login</span>
+        </a>
+      </ng-template>
+    </nav>
+  </div>
+  
+  <!-- Mobile Menu Backdrop -->
+  <div class="mobile-menu-backdrop" 
+       *ngIf="isMobileMenuOpen" 
+       (click)="closeMobileMenu()">
+  </div>
+</header>

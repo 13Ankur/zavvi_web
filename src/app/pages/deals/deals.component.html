@@ -1,0 +1,219 @@
+<div class="deals-page" role="main">
+  <div class="page-content">
+    <!-- Back Button -->
+    <button 
+      class="back-btn" 
+      (click)="goBack()"
+      (keydown.enter)="goBack()"
+      (keydown.space)="goBack(); $event.preventDefault()"
+      aria-label="Go back to home"
+      type="button">
+      <span class="material-icons" aria-hidden="true">arrow_back</span>
+      <span class="back-text">Back to Home</span>
+    </button>
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="header-icon" aria-hidden="true">
+        <span class="material-icons">military_tech</span>
+      </div>
+      <h1>Premium Deals</h1>
+      <p class="subtitle">Exclusive golden offers you don't want to miss</p>
+    </header>
+
+    <!-- Filters & Search -->
+    <section class="filters-section" *ngIf="!isLoading && deals.length > 0" aria-label="Deal filters and search">
+      <div class="search-box">
+        <span class="material-icons" aria-hidden="true">search</span>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          (input)="filterDeals()"
+          placeholder="Search deals..."
+          aria-label="Search deals"
+          autocomplete="off">
+      </div>
+      
+      <div class="filter-chips" role="tablist" aria-label="Filter deals">
+        <button 
+          class="filter-chip" 
+          [class.active]="selectedFilter === 'all'"
+          (click)="setFilter('all')"
+          (keydown.enter)="setFilter('all')"
+          role="tab"
+          [attr.aria-selected]="selectedFilter === 'all'"
+          type="button"
+          aria-label="Show all deals">
+          <span class="material-icons" aria-hidden="true">grid_view</span>
+          All Deals
+        </button>
+        <button 
+          class="filter-chip" 
+          [class.active]="selectedFilter === 'golden'"
+          (click)="setFilter('golden')"
+          (keydown.enter)="setFilter('golden')"
+          role="tab"
+          [attr.aria-selected]="selectedFilter === 'golden'"
+          type="button"
+          aria-label="Show golden deals only">
+          <span class="material-icons" aria-hidden="true">star</span>
+          Golden Only
+        </button>
+        <button 
+          class="filter-chip" 
+          [class.active]="selectedFilter === 'featured'"
+          (click)="setFilter('featured')"
+          (keydown.enter)="setFilter('featured')"
+          role="tab"
+          [attr.aria-selected]="selectedFilter === 'featured'"
+          type="button"
+          aria-label="Show featured deals only">
+          <span class="material-icons" aria-hidden="true">verified</span>
+          Featured
+        </button>
+      </div>
+      
+      <div class="results-count" role="status" aria-live="polite">
+        <span class="material-icons" aria-hidden="true">local_offer</span>
+        <span>{{ filteredDeals.length }} {{ filteredDeals.length === 1 ? 'deal' : 'deals' }} found</span>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <p>Loading premium deals...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && errorMessage" class="error-container" role="alert">
+      <span class="material-icons error-icon">error_outline</span>
+      <h2>Oops!</h2>
+      <p>{{ errorMessage }}</p>
+      <button (click)="retryLoading()" class="retry-btn">
+        <span class="material-icons">refresh</span>
+        Try Again
+      </button>
+    </div>
+
+    <!-- Deals Grid -->
+    <section *ngIf="!isLoading && !errorMessage && filteredDeals.length > 0" class="deals-grid" role="list" aria-label="Premium deals">
+      <article 
+        class="deal-card" 
+        *ngFor="let deal of filteredDeals; trackBy: trackByDealId"
+        [class.golden-card]="deal.isGoldenCoupon"
+        [attr.tabindex]="0"
+        (click)="viewDealDetails(deal)"
+        (keydown.enter)="viewDealDetails(deal)"
+        (keydown.space)="viewDealDetails(deal); $event.preventDefault()"
+        role="listitem"
+        [attr.aria-label]="deal.title + (deal.discount ? ', ' + deal.discount + ' discount' : '') + (deal.isGoldenCoupon ? ', Golden offer' : '')">
+        
+        <!-- Golden Badge -->
+        <div class="golden-badge" *ngIf="deal.isGoldenCoupon">
+          <span class="material-icons">auto_awesome</span>
+          <span>GOLDEN</span>
+        </div>
+        
+        <!-- Deal Image -->
+        <div class="deal-image">
+          <img [src]="getDealImage(deal)" 
+               [alt]="deal.title"
+               (error)="onImageError($event, deal)"
+               loading="lazy">
+          <div class="image-overlay"></div>
+          
+          <!-- Discount Badge -->
+          <div class="discount-badge" *ngIf="deal.discount">
+            {{ deal.discount }}
+          </div>
+        </div>
+        
+        <!-- Deal Content -->
+        <div class="deal-content">
+          <!-- Shop Info -->
+          <div class="shop-info" *ngIf="deal.shop">
+            <div class="shop-logo">
+              <img [src]="getShopLogo(deal.shop)" 
+                   [alt]="deal.shop.name + ' logo'"
+                   (error)="onShopLogoError($event, deal.shop)">
+            </div>
+            <span class="shop-name">{{ deal.shop.name }}</span>
+          </div>
+          
+          <!-- Deal Title -->
+          <h3 class="deal-title">{{ deal.title }}</h3>
+          
+          <!-- Deal Description -->
+          <p class="deal-description" *ngIf="deal.description">
+            {{ deal.description }}
+          </p>
+          
+          <!-- Deal Meta -->
+          <div class="deal-meta">
+            <div class="meta-item" *ngIf="deal.validUntil">
+              <span class="material-icons">schedule</span>
+              <span>Valid till {{ deal.validUntil | date:'MMM dd, yyyy' }}</span>
+            </div>
+            <div class="meta-item" *ngIf="deal.category">
+              <span class="material-icons">category</span>
+              <span>{{ deal.category.name }}</span>
+            </div>
+            <div class="meta-item" *ngIf="deal.location">
+              <span class="material-icons">location_on</span>
+              <span>{{ deal.location }}</span>
+            </div>
+          </div>
+          
+          <!-- Golden Coupon Info -->
+          <div class="golden-info" *ngIf="deal.isGoldenCoupon">
+            <span class="material-icons">info</span>
+            <span>One-time use only • Limited availability</span>
+          </div>
+          
+          <!-- Action Button -->
+          <button class="view-btn" 
+                  [class.golden-btn]="deal.isGoldenCoupon"
+                  (click)="viewDealDetails(deal); $event.stopPropagation()">
+            <span class="material-icons">{{deal.isGoldenCoupon ? 'star' : 'visibility'}}</span>
+            {{ deal.isGoldenCoupon ? 'Claim Golden Offer' : 'View Deal' }}
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !errorMessage && filteredDeals.length === 0" class="empty-state">
+      <div class="empty-content">
+        <div class="empty-icon-wrapper">
+          <span class="material-icons empty-icon">{{deals.length === 0 ? 'local_offer' : 'search_off'}}</span>
+          <div class="icon-circle circle-1"></div>
+          <div class="icon-circle circle-2"></div>
+          <div class="icon-circle circle-3"></div>
+        </div>
+        
+        <h2 class="empty-title">
+          {{ deals.length === 0 ? 'No Premium Deals Yet!' : 'No Matching Deals' }}
+        </h2>
+        <p class="empty-message">
+          {{ deals.length === 0 
+             ? 'We\'re working hard to bring you amazing golden offers. Check back soon!' 
+             : 'Try adjusting your search or filters to find more deals.' }}
+        </p>
+        
+        <div class="empty-actions">
+          <button class="action-btn action-btn-primary" 
+                  (click)="deals.length === 0 ? goToHome() : clearFilters()">
+            <span class="material-icons">{{ deals.length === 0 ? 'home' : 'clear_all' }}</span>
+            {{ deals.length === 0 ? 'Explore All Offers' : 'Clear Filters' }}
+          </button>
+          <button class="action-btn action-btn-secondary" (click)="retryLoading()">
+            <span class="material-icons">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
