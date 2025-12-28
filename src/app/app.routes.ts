@@ -18,6 +18,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/shop-deals/shop-deals.component').then(m => m.ShopDealsComponent)
   },
   {
+    path: 'deal-detail',
+    loadComponent: () => import('./pages/deal-detail/deal-detail.component').then(m => m.DealDetailComponent)
+  },
+  {
     path: 'deals',
     loadComponent: () => import('./pages/deals/deals.component').then(m => m.DealsComponent)
   },

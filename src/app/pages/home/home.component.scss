@@ -2,6 +2,44 @@
 @use './home-loading.scss';
 @use './home-responsive.scss';
 
+// Location Blocking Overlay (CRITICAL - blocks entire app)
+.location-blocking-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; // Below location modal (10000) but above everything else
+  
+  .blocking-message {
+    text-align: center;
+    padding: 40px;
+    
+    .blocking-icon {
+      font-size: 80px;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 12px 0;
+    }
+    
+    p {
+      font-size: 1rem;
+      color: #666;
+      margin: 0;
+    }
+  }
+}
+
 // Quick About Section
 .quick-about-section {
   padding: 40px 20px;
@@ -842,83 +880,149 @@
 
 // Deal indicators - Removed (no longer showing "Limited Time" text)
 
-// Dark Mode Overrides
-.dark-mode {
+// ============================================
+// DARK MODE OVERRIDES - Using :host-context for Angular
+// ============================================
+:host-context(.dark-mode) {
+  .location-blocking-overlay {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    
+    .blocking-message {
+      h2 {
+        color: #f5f5f5 !important;
+      }
+      
+      p {
+        color: #b3b3b3 !important;
+      }
+    }
+  }
+  
   .home-page {
-    background: var(--bg-secondary);
+    background: #121212 !important;
+  }
+
+  .mobile-location .location-header .mobile-location-select {
+    background: #1a1a1a !important;
+    color: #f5f5f5 !important;
+    
+    &:focus {
+      outline-color: white !important;
+    }
   }
 
   .quick-about-section .about-banner {
-    background: linear-gradient(135deg, #6C47FF 0%, #8E54E9 100%);
-    color: white; // Keep white text on gradient
+    background: linear-gradient(135deg, #6C47FF 0%, #8E54E9 100%) !important;
+    color: white !important;
   }
 
   .section-subtitle {
-    color: var(--text-medium);
+    color: #b3b3b3 !important;
   }
 
   .search-section .search-input {
-    background: var(--bg-primary);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: var(--text-dark);
+    background: #1a1a1a !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #f5f5f5 !important;
     
     &::placeholder {
-      color: var(--text-light);
+      color: #808080 !important;
     }
     
     &:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 4px 16px rgba(108, 71, 255, 0.3);
+      border-color: #6C47FF !important;
+      box-shadow: 0 4px 16px rgba(108, 71, 255, 0.3) !important;
     }
   }
 
   .offer-card {
-    background: var(--bg-primary);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    background: #1a1a1a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
 
     &:hover {
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      border-color: rgba(108, 71, 255, 0.5);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+      border-color: rgba(108, 71, 255, 0.5) !important;
+      background: #1a1a1a !important;
     }
 
-    .offer-content {
-      h3,
-      .offer-title {
-        color: var(--text-dark) !important;
-      }
+    .offer-image {
+      background: linear-gradient(135deg, #121212 0%, #0a0a0a 100%) !important;
+    }
 
-      .category-name {
-        color: var(--primary-color) !important;
-      }
+    .offer-content h3,
+    .offer-content .offer-title {
+      color: #f5f5f5 !important;
+    }
 
-      .offer-location {
-        color: var(--text-medium);
-      }
+    .offer-content .category-name {
+      color: #6C47FF !important;
+    }
+
+    .offer-content .offer-location {
+      color: #b3b3b3 !important;
     }
   }
 
-  .no-offers {
-    p {
-      color: var(--text-medium);
-    }
+  .no-offers p {
+    color: #b3b3b3 !important;
+  }
 
-    .hint {
-      color: var(--text-light);
-    }
+  .no-offers .hint {
+    color: #808080 !important;
+  }
+
+  .no-offers-icon {
+    color: #808080 !important;
   }
 
   .category-card {
-    background: var(--bg-primary);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    background: #1a1a1a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+
+    &::before {
+      opacity: 0.3 !important;
+    }
 
     &:hover {
-      box-shadow: 0 12px 32px rgba(108, 71, 255, 0.3);
+      box-shadow: 0 12px 32px rgba(108, 71, 255, 0.3) !important;
+      background: #1a1a1a !important;
     }
 
-    .category-name {
-      color: var(--text-dark);
+    h3 {
+      color: #f5f5f5 !important;
     }
+
+    &:hover h3 {
+      color: #6C47FF !important;
+    }
+
+    .category-count {
+      color: #b3b3b3 !important;
+    }
+
+    .category-icon-wrapper {
+      background: linear-gradient(135deg, rgba(108, 71, 255, 0.2), rgba(91, 134, 229, 0.2)) !important;
+      box-shadow: 0 8px 20px rgba(108, 71, 255, 0.25) !important;
+    }
+  }
+
+  // Banner Section Dark Mode
+  .banner-section .nav-arrow {
+    background: rgba(26, 26, 26, 0.9) !important;
+    
+    .material-icons {
+      color: #6C47FF !important;
+    }
+    
+    &:hover {
+      background: rgba(26, 26, 26, 1) !important;
+    }
+  }
+
+  // Main Content Dark Mode
+  .main-content {
+    background: #121212 !important;
   }
 }

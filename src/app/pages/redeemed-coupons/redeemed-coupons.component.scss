@@ -1718,3 +1718,248 @@
     border: 2px solid #000 !important;
   }
 }
+
+// ============================================
+// DARK MODE OVERRIDES
+// ============================================
+:host-context(.dark-mode) {
+  .coupons-page {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  }
+
+  .back-btn {
+    background: var(--bg-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--primary-color);
+
+    &:hover {
+      background: rgba(108, 71, 255, 0.15);
+      border-color: var(--primary-color);
+    }
+  }
+
+  .filter-tabs {
+    background: var(--bg-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .filter-tab {
+    color: var(--text-medium);
+
+    &:hover:not(.active) {
+      background: rgba(108, 71, 255, 0.15);
+    }
+  }
+
+  .loading-container,
+  .error-container {
+    p {
+      color: var(--text-medium);
+    }
+
+    h2 {
+      color: var(--text-dark);
+    }
+  }
+
+  .coupon-card {
+    background: var(--bg-primary);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(108, 71, 255, 0.2);
+      border-color: rgba(108, 71, 255, 0.3);
+    }
+
+    &::before {
+      background: linear-gradient(90deg, transparent, rgba(108, 71, 255, 0.1), transparent);
+    }
+  }
+
+  .shop-section {
+    .shop-logo {
+      background: var(--bg-secondary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .shop-details {
+      .shop-name {
+        color: var(--text-dark);
+      }
+
+      .shop-address {
+        color: var(--text-medium);
+      }
+    }
+  }
+
+  .deal-section {
+    .deal-title {
+      color: var(--text-dark);
+    }
+  }
+
+  .code-preview {
+    background: linear-gradient(135deg, rgba(108, 71, 255, 0.15), rgba(91, 134, 229, 0.15));
+    border-color: rgba(108, 71, 255, 0.25);
+
+    .copy-btn-mini {
+      background: var(--bg-secondary);
+
+      &:hover {
+        background: var(--primary-color);
+      }
+    }
+  }
+
+  .quick-info .info-item {
+    color: var(--text-medium);
+  }
+
+  .action-hint {
+    background: rgba(108, 71, 255, 0.1);
+  }
+
+  .no-coupons {
+    .no-coupons-icon {
+      color: var(--text-light);
+    }
+
+    h2 {
+      color: var(--text-dark);
+    }
+
+    p {
+      color: var(--text-medium);
+    }
+  }
+
+  // Modal Dark Mode
+  .modal-content {
+    background: var(--bg-primary);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  .close-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-dark);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  .modal-header {
+    .modal-shop-logo {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-shop-name {
+      color: var(--text-dark);
+    }
+  }
+
+  .modal-deal-section {
+    .modal-deal-title {
+      color: var(--text-dark);
+    }
+
+    .modal-description {
+      color: var(--text-medium);
+    }
+  }
+
+  .qr-section {
+    h4 {
+      color: var(--text-dark);
+    }
+
+    .qr-container {
+      background: var(--bg-secondary);
+      border-color: var(--primary-color);
+      box-shadow: 0 8px 24px rgba(108, 71, 255, 0.3);
+    }
+
+    .no-qr {
+      color: var(--text-light);
+
+      p {
+        color: var(--text-medium);
+      }
+    }
+  }
+
+  .code-section {
+    h4 {
+      color: var(--text-dark);
+    }
+
+    .code-display {
+      background: linear-gradient(135deg, rgba(108, 71, 255, 0.15), rgba(91, 134, 229, 0.15));
+      border-color: rgba(108, 71, 255, 0.25);
+    }
+  }
+
+  .shop-info-section,
+  .dates-section {
+    h4 {
+      color: var(--text-dark);
+    }
+
+    .info-row,
+    .date-item {
+      background: var(--bg-secondary);
+
+      .info-label,
+      .date-label {
+        color: var(--text-light);
+      }
+
+      .info-value,
+      .date-value {
+        color: var(--text-dark);
+      }
+    }
+  }
+
+  .terms-section {
+    h4 {
+      color: var(--text-dark);
+    }
+
+    .terms-box {
+      background: rgba(255, 251, 235, 0.1);
+      border-color: rgba(251, 191, 36, 0.4);
+
+      p {
+        color: var(--text-medium);
+      }
+    }
+  }
+
+  .action-buttons {
+    .action-btn-secondary {
+      background: transparent;
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+
+      &:hover {
+        background: rgba(108, 71, 255, 0.15);
+      }
+    }
+  }
+
+  .vendor-instructions {
+    background: linear-gradient(135deg, rgba(108, 71, 255, 0.1), rgba(91, 134, 229, 0.1));
+
+    .instruction-header {
+      color: var(--text-dark);
+    }
+
+    ol li {
+      color: var(--text-medium);
+    }
+  }
+}

@@ -78,12 +78,9 @@ export class HeaderComponent implements OnInit {
           this.selectedLocation = currentLocation;
           this.selectedLocationId = currentLocation.id;
           console.log('Header: Current location from service:', currentLocation.name);
-        } else if (locations.length > 0) {
-          // Set default location if none selected
-          const defaultLocation = locations.find(l => l.isDefault) || locations[0];
-          this.locationService.setSelectedLocation(defaultLocation);
-          this.selectedLocationId = defaultLocation.id;
-        }
+        } 
+        // IMPORTANT: Do NOT auto-select any location. Leave empty until user chooses.
+        // This prevents auto-picking defaults like Gurugram/Gurgaon.
       },
       error: (error) => {
         console.error('Error loading locations:', error);

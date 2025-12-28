@@ -1,0 +1,84 @@
+<div class="deal-detail-page" [class.golden-page]="deal?.isGoldenCoupon" *ngIf="deal">
+  <!-- Back Button -->
+  <div class="back-button-container">
+    <button class="back-btn" (click)="goBack()" aria-label="Go back to deals">
+      <span class="material-icons">arrow_back</span>
+      <span>Back</span>
+    </button>
+  </div>
+
+  <!-- Golden Crown Badge -->
+  <div class="golden-crown-badge-page" *ngIf="deal.isGoldenCoupon">
+    <span class="material-icons">star</span>
+    <span>GOLDEN OFFER</span>
+  </div>
+  
+  <!-- Header Section -->
+  <div class="header-section">
+    <!-- Discount Badge (Only for non-golden) -->
+    <div class="discount-badge-pill" *ngIf="!deal.isGoldenCoupon && deal.discount">
+      {{ deal.discount }}
+    </div>
+    
+    <!-- Title -->
+    <h1 class="deal-title" [class.golden-title]="deal.isGoldenCoupon">{{ deal.title }}</h1>
+    
+    <!-- Description -->
+    <p class="deal-description" [class.golden-description]="deal.isGoldenCoupon">{{ deal.description }}</p>
+  </div>
+  
+  <!-- Details Section -->
+  <div class="details-section">
+    <!-- Golden Warning Card -->
+    <div class="golden-warning-card" *ngIf="deal.isGoldenCoupon">
+      <span class="material-icons warning-icon">warning</span>
+      <div class="warning-content">
+        <h3 class="warning-title">Premium Golden Offer</h3>
+        <p class="warning-text">One-time use only • Limited to {{ deal.maxRedemptions || '∞' }} users</p>
+      </div>
+    </div>
+    
+    <!-- Valid Until Card -->
+    <div class="info-card" [class.golden-info-card]="deal.isGoldenCoupon" *ngIf="deal.validUntil">
+      <div class="info-card-header">
+        <span class="material-icons info-icon">calendar_today</span>
+        <span class="info-label">Valid Until</span>
+      </div>
+      <div class="info-value">{{ formatDate(deal.validUntil) }}</div>
+    </div>
+    
+    <!-- Terms Card -->
+    <div class="info-card terms-card" [class.golden-info-card]="deal.isGoldenCoupon" *ngIf="deal.terms">
+      <div class="info-card-header">
+        <span class="material-icons info-icon">info</span>
+        <span class="info-label">Terms & Conditions</span>
+      </div>
+      <div class="info-value terms-text">{{ deal.terms }}</div>
+    </div>
+  </div>
+  
+  <!-- Fixed Action Button at Bottom -->
+  <div class="button-container" [class.golden-button-container]="deal.isGoldenCoupon">
+    <button 
+      class="action-btn" 
+      [class.golden-action-btn]="deal.isGoldenCoupon"
+      [disabled]="isGenerating"
+      [class.btn-loading]="isGenerating"
+      (click)="generateQRCode()"
+      [attr.aria-busy]="isGenerating">
+      <span class="material-icons" *ngIf="!isGenerating">qr_code</span>
+      <span class="material-icons rotating" *ngIf="isGenerating">hourglass_empty</span>
+      <span>{{ isGenerating ? 'Processing...' : 'Generate QR Code' }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- Deal Not Found State -->
+<div class="not-found-container" *ngIf="!deal">
+  <div class="not-found-content">
+    <span class="material-icons not-found-icon">search_off</span>
+    <h2>Deal Not Found</h2>
+    <p>We couldn't find the deal you're looking for.</p>
+  </div>
+</div>
+

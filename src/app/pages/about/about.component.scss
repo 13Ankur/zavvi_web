@@ -468,77 +468,116 @@
   }
 }
 
-// Dark Mode Overrides
-.dark-mode {
+// ============================================
+// DARK MODE OVERRIDES - Using :host-context for Angular
+// ============================================
+
+:host-context(.dark-mode) {
   .about-page {
-    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%) !important;
   }
 
+  // Base section styles - applies to ALL sections
   .about-section {
-    background: var(--bg-primary);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    background: #1a1a1a !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5) !important;
 
     &:hover {
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7) !important;
     }
 
+    // All h2 headings
+    h2 {
+      color: #6C47FF !important;
+      border-bottom-color: #6C47FF !important;
+    }
+
+    // All paragraphs in any section
     p {
-      color: var(--text-dark);
+      color: #f5f5f5 !important;
+    }
 
-      &.intro-text {
-        color: var(--text-dark);
-      }
+    p.intro-text {
+      color: #f5f5f5 !important;
+    }
 
-      &.section-intro {
-        color: var(--text-medium);
-      }
+    p.section-intro {
+      color: #b3b3b3 !important;
+    }
+
+    // Strong text
+    strong {
+      color: #6C47FF !important;
     }
   }
 
+  // Features Section
   .features-section .feature-card {
-    background: var(--bg-primary);
-    border-color: rgba(108, 71, 255, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    background: #1a1a1a !important;
+    border-color: rgba(108, 71, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
 
     &:hover {
-      box-shadow: 0 8px 24px rgba(108, 71, 255, 0.3);
+      box-shadow: 0 8px 24px rgba(108, 71, 255, 0.3) !important;
     }
 
     h3 {
-      color: var(--primary-color);
+      color: #6C47FF !important;
     }
 
     p {
-      color: var(--text-medium);
+      color: #b3b3b3 !important;
     }
   }
 
-  .categories-section {
-    .category-item {
-      background: var(--bg-primary);
-      color: var(--text-dark);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  // Categories Section
+  .categories-section .category-item {
+    background: #1a1a1a !important;
+    color: #f5f5f5 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
 
-      &:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
-      }
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7) !important;
     }
 
-    .category-note {
-      color: var(--text-medium);
+    strong {
+      color: #6C47FF !important;
     }
   }
 
+  .categories-section .category-note {
+    color: #b3b3b3 !important;
+  }
+
+  // How It Works Section
+  .how-it-works-section .step-divider {
+    color: #6C47FF !important;
+  }
+
+  // Mission Section
   .mission-section {
-    background: var(--bg-primary);
-    
-    p {
-      color: var(--text-medium);
-    }
+    background: #1a1a1a !important;
+  }
+
+  .mission-section p {
+    color: #b3b3b3 !important;
+  }
+
+  // Contact Section - CRITICAL FIX
+  .contact-section {
+    background: #1a1a1a !important;
+  }
+
+  .contact-section p {
+    color: #f5f5f5 !important;
   }
 
   .contact-section .contact-info p {
-    color: var(--text-medium);
+    color: #b3b3b3 !important;
+  }
+
+  .contact-section .contact-info strong {
+    color: #6C47FF !important;
   }
 }
 

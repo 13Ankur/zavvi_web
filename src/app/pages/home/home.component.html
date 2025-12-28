@@ -1,4 +1,14 @@
-<div class="home-page" role="main">
+<!-- Location Blocking Overlay (BLOCKS app until location selected) -->
+<div class="location-blocking-overlay" *ngIf="!locationService.hasSelectedLocation()">
+  <div class="blocking-message">
+    <span class="material-icons blocking-icon">location_off</span>
+    <h2>Location Required</h2>
+    <p>Please select your location to continue</p>
+  </div>
+</div>
+
+<!-- Main App (Only shows if location is selected) -->
+<div class="home-page" role="main" *ngIf="locationService.hasSelectedLocation()">
   <!-- Mobile Location Selector (visible only on mobile) -->
   <div class="mobile-location" *ngIf="locations.length > 0">
     <div class="location-header">

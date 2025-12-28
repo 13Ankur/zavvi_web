@@ -75,5 +75,43 @@ export class LocationService {
       this.selectedLocationSubject.next({ ...currentLocation });
     }
   }
+
+  /**
+   * Check if this is the first visit (no location selected yet)
+   * @returns true if first visit, false otherwise
+   */
+  isFirstVisit(): boolean {
+    const hasLocation = !!SafeStorage.getItem('selectedLocation');
+    const hasVisited = !!SafeStorage.getItem('locationModalShown');
+    
+    // First visit if no location AND modal hasn't been shown
+    return !hasLocation && !hasVisited;
+  }
+
+  /**
+   * Mark that location has been selected (first visit complete)
+   */
+  markLocationSelected(): void {
+    SafeStorage.setItem('locationModalShown', 'true');
+    console.log('LocationService: First visit completed, modal shown flag set');
+  }
+
+  /**
+   * Check if location is currently selected
+   * @returns true if location is selected
+   */
+  hasSelectedLocation(): boolean {
+    return !!this.selectedLocationSubject.value;
+  }
+
+  /**
+   * Clear all location data (for testing or reset)
+   */
+  clearLocationData(): void {
+    SafeStorage.removeItem('selectedLocation');
+    SafeStorage.removeItem('locationModalShown');
+    this.selectedLocationSubject.next(null);
+    console.log('LocationService: All location data cleared');
+  }
 }
 

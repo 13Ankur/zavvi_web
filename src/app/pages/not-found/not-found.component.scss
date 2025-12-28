@@ -363,3 +363,80 @@ h1 {
   }
 }
 
+// ============================================
+// DARK MODE OVERRIDES
+// ============================================
+:host-context(.dark-mode) {
+  .not-found-page {
+    background: linear-gradient(135deg, #1a1a3e 0%, #0f0f1a 100%);
+  }
+
+  .error-code {
+    .digit {
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .icon-wrapper {
+      .search-icon {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .circle {
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  h1 {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .message {
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .action-btn {
+    &.primary {
+      background: rgba(255, 255, 255, 0.95);
+      color: #667eea;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+      &:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    &.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.95);
+      border-color: rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  .quick-links {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    .quick-links-title {
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .link-card {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+}
+

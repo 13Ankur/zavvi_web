@@ -401,7 +401,7 @@
 }
 
 // Dark Mode Styles
-.dark-mode {
+:host-context(.dark-mode) {
   .main-header {
     background: rgba(26, 26, 26, 0.95);
     border-bottom: 1px solid rgba(108, 71, 255, 0.2);

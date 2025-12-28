@@ -1,0 +1,127 @@
+<div 
+  class="location-modal-overlay" 
+  *ngIf="showModal" 
+  (click)="onBackdropClick($event)"
+  (keydown)="onKeyDown($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="location-modal-title"
+  aria-describedby="location-modal-desc">
+  
+  <div class="location-modal-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="location-modal-header">
+      <div class="location-icon-wrapper">
+        <span class="material-icons location-icon-large">location_on</span>
+      </div>
+      <h2 id="location-modal-title" class="location-modal-title">Select Your Location</h2>
+      <p id="location-modal-desc" class="location-modal-subtitle">Choose your city to discover nearby deals and offers</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="loading-text">Loading locations...</p>
+    </div>
+
+    <!-- Error State (Inline) -->
+    <div class="error-banner" *ngIf="error && !isLoading && locations.length > 0" role="alert">
+      <span class="material-icons error-banner-icon">warning</span>
+      <span class="error-banner-text">{{ error }}</span>
+    </div>
+
+    <!-- Critical Error State (Full Screen) -->
+    <div class="error-container" *ngIf="error && !isLoading && locations.length === 0" role="alert">
+      <span class="material-icons error-icon">cloud_off</span>
+      <p class="error-text">{{ error }}</p>
+      <div class="error-actions">
+        <button 
+          class="retry-btn" 
+          (click)="retryLoadLocations()"
+          [disabled]="retryCount >= maxRetries"
+          [class.disabled]="retryCount >= maxRetries">
+          <span class="material-icons">refresh</span>
+          <span>{{ retryCount >= maxRetries ? 'Please Refresh Page' : 'Retry (' + (maxRetries - retryCount) + ' left)' }}</span>
+        </button>
+      </div>
+      <p class="error-hint" *ngIf="retryCount >= maxRetries">
+        <span class="material-icons">info</span>
+        Press F5 or refresh the page to try again
+      </p>
+    </div>
+
+    <!-- Location Selection -->
+    <div class="location-selection" *ngIf="!isLoading && locations.length > 0">
+      <!-- Dropdown -->
+      <div class="location-dropdown-wrapper" [class.has-error]="error && !selectedLocationId">
+        <span class="material-icons dropdown-icon">place</span>
+        <select 
+          class="location-dropdown" 
+          [(ngModel)]="selectedLocationId"
+          (change)="error = ''"
+          aria-label="Select your city"
+          aria-required="true"
+          [attr.aria-invalid]="error && !selectedLocationId"
+          required>
+          <option value="" disabled selected>Choose your city...</option>
+          <option 
+            *ngFor="let location of locations; trackBy: trackByLocation" 
+            [value]="location.id || location.slug">
+            {{ location.name }}
+          </option>
+        </select>
+        <span class="material-icons dropdown-arrow">expand_more</span>
+      </div>
+
+      <!-- Selection Hint -->
+      <p class="selection-hint" *ngIf="!selectedLocationId && !error">
+        <span class="material-icons">touch_app</span>
+        Tap above to select your city
+      </p>
+
+      <!-- Info Text -->
+      <div class="location-info" *ngIf="selectedLocationId">
+        <span class="material-icons info-icon">info</span>
+        <p class="info-text">Your location helps us show relevant deals near you</p>
+      </div>
+
+      <!-- Continue Button -->
+      <button 
+        class="continue-btn" 
+        (click)="onSelectLocation()"
+        [disabled]="!selectedLocationId || isSubmitting"
+        [class.disabled]="!selectedLocationId"
+        [class.submitting]="isSubmitting"
+        [attr.aria-busy]="isSubmitting"
+        aria-describedby="continue-hint">
+        <span class="material-icons" *ngIf="!isSubmitting">check_circle</span>
+        <span class="material-icons spinner-icon" *ngIf="isSubmitting">hourglass_empty</span>
+        <span>{{ isSubmitting ? 'Saving...' : (selectedLocationId ? 'Continue' : 'Select a city first') }}</span>
+      </button>
+      <p id="continue-hint" class="sr-only">Button is disabled until you select a city</p>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section" *ngIf="!isLoading && locations.length > 0">
+      <div class="feature-item">
+        <span class="material-icons feature-icon">local_offer</span>
+        <span class="feature-text">Nearby Deals</span>
+      </div>
+      <div class="feature-item">
+        <span class="material-icons feature-icon">store</span>
+        <span class="feature-text">Local Shops</span>
+      </div>
+      <div class="feature-item">
+        <span class="material-icons feature-icon">qr_code</span>
+        <span class="feature-text">Easy Redemption</span>
+      </div>
+    </div>
+
+    <!-- Storage Warning -->
+    <div class="storage-warning" *ngIf="!isLoading && locations.length === 0 && error?.includes('Storage')">
+      <span class="material-icons">cookie</span>
+      <p>Please enable cookies/storage in your browser settings and refresh the page.</p>
+    </div>
+  </div>
+</div>
+

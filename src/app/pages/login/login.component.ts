@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { SafeStorage } from '../../utils/platform.utils';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,12 @@ import { AuthService } from '../../services/auth.service';
         <div class="login-card">
           <h1>{{ otpSent ? 'Verify OTP' : 'Sign In to Zavvi' }}</h1>
           <p>{{ otpSent ? 'Enter the OTP sent to your mobile' : 'Access exclusive deals and save more' }}</p>
+          
+          <!-- Session Expired Message -->
+          <div class="session-expired-message" *ngIf="sessionExpiredMessage">
+            <span class="icon">⚠️</span>
+            <span>{{ sessionExpiredMessage }}</span>
+          </div>
           
           <!-- Mobile Number Input -->
           <form class="login-form" *ngIf="!otpSent" (ngSubmit)="onSendOTP()">
@@ -90,11 +97,17 @@ import { AuthService } from '../../services/auth.service';
     .resend-section { text-align: center; margin-top: 16px; }
     .form-footer { margin-top: 24px; text-align: center; }
     .form-footer a { color: #6C47FF; font-weight: 600; text-decoration: none; }
+    .session-expired-message { background: #fff3cd; color: #856404; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; border: 1px solid #ffc107; }
+    .session-expired-message .icon { font-size: 1.2rem; }
 
     /* Dark Mode */
     :host-context(.dark-mode) .login-card {
       background: var(--bg-primary);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    :host-context(.dark-mode) h1 {
+      color: var(--text-dark);
     }
 
     :host-context(.dark-mode) p {
@@ -111,12 +124,21 @@ import { AuthService } from '../../services/auth.service';
       color: var(--text-dark);
     }
 
+    :host-context(.dark-mode) input::placeholder {
+      color: var(--text-light);
+    }
+
     :host-context(.dark-mode) input:disabled {
       background: rgba(255, 255, 255, 0.05);
     }
 
     :host-context(.dark-mode) .btn-link:disabled {
       color: var(--text-light);
+    }
+
+    :host-context(.dark-mode) .error-message {
+      background: rgba(255, 100, 100, 0.15);
+      color: #ff6b6b;
     }
   `]
 })
@@ -125,6 +147,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   otp: string = '';
   otpSent: boolean = false;
   errorMessage: string = '';
+  sessionExpiredMessage: string = '';
   resendTimer: number = 60;
   canResend: boolean = false;
   isLoading: boolean = false;
@@ -134,10 +157,39 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    // Check for session expired query param
+    this.route.queryParams.subscribe(params => {
+      if (params['sessionExpired'] === 'true') {
+        this.sessionExpiredMessage = 'Your session has expired. Please login again to continue.';
+        // Clear the query param from URL without reloading
+        this.router.navigate([], { 
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true
+        });
+      }
+      if (params['accessDenied'] === 'true') {
+        this.sessionExpiredMessage = 'Access denied. Please login to continue.';
+        this.router.navigate([], { 
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true
+        });
+      }
+    });
+    
+    // Check for redirect URL from storage (set by interceptor)
+    const redirectAfterLogin = SafeStorage.getItem('redirectAfterLogin');
+    if (redirectAfterLogin) {
+      this.authService.setRedirectUrl(redirectAfterLogin);
+      SafeStorage.removeItem('redirectAfterLogin');
+    }
+    
     if (this.authService.isLoggedIn()) {
       this.handleRedirect();
     }
@@ -249,8 +301,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private handleRedirect() {
-    // If profile is incomplete, redirect to personal info page (like mobile app)
-    if (!this.profileComplete) {
+    // Get current user to check if profile is complete
+    const currentUser = this.authService.getCurrentUser();
+    // Profile is complete if user has a name (email is optional)
+    const needsProfileCompletion = !this.profileComplete || 
+      (currentUser && !currentUser.name);
+    
+    // If profile is incomplete (no name), redirect to personal info page
+    if (needsProfileCompletion) {
       this.router.navigate(['/personal-info'], { 
         queryParams: { fromLogin: 'true' } 
       });

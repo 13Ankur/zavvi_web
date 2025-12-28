@@ -1468,3 +1468,187 @@
     }
   }
 }
+
+// ============================================
+// DARK MODE OVERRIDES
+// ============================================
+:host-context(.dark-mode) {
+  .shop-deals-page {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  }
+
+  .page-header {
+    .back-btn {
+      background: var(--bg-primary);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: var(--primary-color);
+
+      &:hover {
+        background: rgba(108, 71, 255, 0.15);
+        border-color: var(--primary-color);
+      }
+    }
+  }
+
+  .loading,
+  .not-found {
+    h2 {
+      color: var(--text-dark);
+    }
+
+    p {
+      color: var(--text-medium);
+    }
+  }
+
+  // Deal Card Dark Mode
+  .deal-card {
+    background: linear-gradient(145deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      border-color: rgba(108, 71, 255, 0.3);
+    }
+
+    &.golden-deal-card {
+      background: linear-gradient(145deg, rgba(255, 249, 230, 0.1) 0%, rgba(255, 230, 204, 0.1) 100%);
+      border-color: rgba(255, 215, 0, 0.4);
+
+      &:hover {
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+      }
+    }
+  }
+
+  .deal-content {
+    .deal-title {
+      color: var(--text-dark);
+    }
+
+    .deal-description {
+      color: var(--text-medium);
+    }
+
+    .one-time-use-badge {
+      background: rgba(255, 215, 0, 0.1);
+      border-color: rgba(255, 215, 0, 0.3);
+      color: #f59e0b;
+    }
+
+    .view-details-link {
+      border-top-color: rgba(108, 71, 255, 0.2);
+    }
+  }
+
+  // QR Modal Dark Mode
+  .qr-modal {
+    .modal-content {
+      background: var(--bg-primary);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-dark);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    .generating-state {
+      h2 {
+        color: var(--text-dark);
+      }
+
+      p {
+        color: var(--text-medium);
+      }
+    }
+
+    .qr-success {
+      .qr-header {
+        h2 {
+          color: var(--text-dark);
+        }
+
+        .subtitle {
+          color: var(--text-medium);
+        }
+      }
+
+      .golden-info-banner {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+        border-color: rgba(255, 215, 0, 0.25);
+        color: #f59e0b;
+      }
+
+      .qr-card {
+        background: var(--bg-secondary);
+        border-color: rgba(255, 255, 255, 0.1);
+
+        .coupon-code-box {
+          background: var(--bg-primary);
+          border-color: rgba(108, 71, 255, 0.25);
+
+          .code-label {
+            color: var(--text-medium);
+          }
+        }
+      }
+
+      .deal-info-card {
+        background: var(--bg-secondary);
+        border-color: rgba(255, 255, 255, 0.1);
+
+        h3 {
+          color: var(--text-dark);
+        }
+
+        .deal-valid {
+          color: var(--text-medium);
+        }
+      }
+
+      .info-section .info-item {
+        background: var(--bg-secondary);
+        border-color: rgba(255, 255, 255, 0.1);
+
+        .info-details {
+          .info-label {
+            color: var(--text-light);
+          }
+
+          .info-value {
+            color: var(--text-dark);
+          }
+        }
+      }
+
+      .important-note {
+        background: rgba(254, 243, 205, 0.1);
+        border-left-color: #f59e0b;
+
+        .note-title {
+          color: #f59e0b;
+        }
+
+        p {
+          color: var(--text-medium);
+        }
+      }
+
+      .modal-actions .action-btn.secondary {
+        background: transparent;
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+
+        &:hover {
+          background: rgba(108, 71, 255, 0.1);
+        }
+      }
+    }
+  }
+}

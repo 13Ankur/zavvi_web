@@ -362,3 +362,61 @@
   }
 }
 
+// ============================================
+// DARK MODE OVERRIDES FOR LOADING STATES
+// ============================================
+:host-context(.dark-mode) {
+  .loading-container {
+    background: linear-gradient(135deg, #1a1a3e 0%, #0f0f1a 100%);
+    background-size: 400% 400%;
+  }
+
+  .loading-logo {
+    background: var(--bg-primary);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  // Skeleton screens dark mode
+  .skeleton-offer {
+    background: var(--bg-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .skeleton-offer-image {
+    background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+    background-size: 200% 100%;
+  }
+
+  .skeleton-offer-title,
+  .skeleton-offer-text {
+    background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+    background-size: 200% 100%;
+  }
+
+  // Error states dark mode
+  .error-container {
+    background: var(--bg-secondary);
+  }
+
+  .error-title {
+    color: var(--text-dark);
+  }
+
+  .error-message {
+    color: var(--text-medium);
+  }
+
+  .error-help {
+    color: var(--text-light);
+  }
+
+  .home-btn {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+
+    &:hover {
+      background: rgba(108, 71, 255, 0.15);
+    }
+  }
+}

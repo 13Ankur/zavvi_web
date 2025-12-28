@@ -34,14 +34,13 @@ import { ApiService } from '../../services/api.service';
             </div>
 
             <div class="form-group">
-              <label>Email Address <span class="required">*</span></label>
+              <label>Email Address <span class="optional">(Optional)</span></label>
               <input 
                 type="email" 
                 [(ngModel)]="email" 
                 name="email" 
                 placeholder="your.email@example.com"
-                [disabled]="isLoading"
-                required>
+                [disabled]="isLoading">
             </div>
 
             <div class="form-group">
@@ -77,6 +76,7 @@ import { ApiService } from '../../services/api.service';
     .form-group { margin-bottom: 20px; }
     label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
     .required { color: #e53e3e; }
+    .optional { color: #888; font-weight: 400; font-size: 0.875rem; }
     input { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
     input:focus { outline: none; border-color: #6C47FF; box-shadow: 0 0 0 3px rgba(108,71,255,0.1); }
     input:disabled { background: #f5f5f5; cursor: not-allowed; color: #999; }
@@ -88,6 +88,10 @@ import { ApiService } from '../../services/api.service';
     :host-context(.dark-mode) .info-card {
       background: var(--bg-primary);
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    :host-context(.dark-mode) h1 {
+      color: var(--text-dark);
     }
 
     :host-context(.dark-mode) p {
@@ -104,9 +108,18 @@ import { ApiService } from '../../services/api.service';
       color: var(--text-dark);
     }
 
+    :host-context(.dark-mode) input::placeholder {
+      color: var(--text-light);
+    }
+
     :host-context(.dark-mode) input:disabled {
       background: rgba(255, 255, 255, 0.05);
       color: var(--text-light);
+    }
+
+    :host-context(.dark-mode) .error-message {
+      background: rgba(255, 100, 100, 0.15);
+      color: #ff6b6b;
     }
 
     @media (max-width: 768px) {
@@ -163,34 +176,41 @@ export class PersonalInfoComponent implements OnInit {
       return;
     }
 
-    if (!this.email || this.email.trim().length === 0) {
-      this.errorMessage = 'Please enter your email address';
-      return;
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.email)) {
-      this.errorMessage = 'Please enter a valid email address';
-      return;
+    // Email validation (only if provided)
+    if (this.email && this.email.trim().length > 0) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.email)) {
+        this.errorMessage = 'Please enter a valid email address';
+        return;
+      }
     }
 
     this.isLoading = true;
 
-    // Update user profile
-    this.apiService.updateUserProfile({
+    // Build update data
+    const updateData: any = {
       name: this.name.trim(),
-      email: this.email.trim(),
       mobile: this.mobile
-    }).subscribe({
+    };
+
+    // Only include email if provided
+    if (this.email && this.email.trim().length > 0) {
+      updateData.email = this.email.trim();
+    }
+
+    // Update user profile
+    this.apiService.updateUserProfile(updateData).subscribe({
       next: (response: any) => {
         this.isLoading = false;
         
         // Update local user data
-        this.authService.updateCurrentUser({
-          name: this.name.trim(),
-          email: this.email.trim()
-        });
+        const updatedData: any = {
+          name: this.name.trim()
+        };
+        if (this.email && this.email.trim().length > 0) {
+          updatedData.email = this.email.trim();
+        }
+        this.authService.updateCurrentUser(updatedData);
 
         console.log('Profile updated successfully');
         
@@ -205,6 +225,14 @@ export class PersonalInfoComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
+        
+        // Check if it's an auth error (token expired)
+        if (error.isAuthError || error.status === 401 || error.status === 403) {
+          // Auth interceptor will handle redirect, just show message
+          this.errorMessage = 'Session expired. Redirecting to login...';
+          return;
+        }
+        
         this.errorMessage = error.message || 'Failed to update profile. Please try again.';
         console.error('Profile update error:', error);
       }

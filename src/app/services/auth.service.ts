@@ -26,22 +26,110 @@ export class AuthService {
     private router: Router,
     private apiService: ApiService
   ) {
+    this.initializeAuth();
+  }
+
+  /**
+   * Initialize authentication state from storage
+   * Also validates token if possible
+   */
+  private initializeAuth(): void {
     const token = SafeStorage.getItem('token');
     const storedUser = SafeStorage.getItem('currentUser');
     
     if (token && storedUser) {
       try {
+        // Check if token is expired by decoding JWT
+        if (this.isTokenExpired(token)) {
+          console.warn('🔐 Token expired on app load - clearing session');
+          this.clearSession();
+          return;
+        }
+        
         this.currentUser = JSON.parse(storedUser);
       } catch (error) {
-        SafeStorage.removeItem('currentUser');
-        SafeStorage.removeItem('token');
+        console.error('Error parsing stored user:', error);
+        this.clearSession();
       }
+    }
+  }
+
+  /**
+   * Check if JWT token is expired
+   * Returns true if expired or invalid, false if valid
+   */
+  private isTokenExpired(token: string): boolean {
+    try {
+      // JWT format: header.payload.signature
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return true; // Invalid token format
+      }
+      
+      // Decode the payload (base64)
+      const payload = JSON.parse(atob(parts[1]));
+      
+      // Check expiration
+      if (payload.exp) {
+        const expirationDate = new Date(payload.exp * 1000);
+        const now = new Date();
+        
+        // Token is expired if expiration date is in the past
+        if (expirationDate < now) {
+          console.log('Token expired at:', expirationDate.toISOString());
+          return true;
+        }
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+      return true; // Assume expired if we can't parse
+    }
+  }
+
+  /**
+   * Clear all session data
+   */
+  clearSession(): void {
+    this.currentUser = null;
+    SafeStorage.removeItem('currentUser');
+    SafeStorage.removeItem('token');
+    SafeStorage.removeItem('redirectAfterLogin');
+  }
+
+  /**
+   * Handle session expiration - called by interceptor or manually
+   */
+  handleSessionExpired(): void {
+    console.warn('🔐 Session expired - redirecting to login');
+    this.clearSession();
+    
+    const currentUrl = this.router.url;
+    if (!currentUrl.includes('/login')) {
+      SafeStorage.setItem('redirectAfterLogin', currentUrl);
+      this.router.navigate(['/login'], { 
+        queryParams: { sessionExpired: 'true' } 
+      });
     }
   }
 
   isLoggedIn(): boolean {
     const token = SafeStorage.getItem('token');
-    return token !== null && this.currentUser !== null;
+    
+    // No token or no user = not logged in
+    if (!token || !this.currentUser) {
+      return false;
+    }
+    
+    // Check if token is expired
+    if (this.isTokenExpired(token)) {
+      console.warn('🔐 Token expired - clearing session');
+      this.clearSession();
+      return false;
+    }
+    
+    return true;
   }
 
   getCurrentUser(): User | null {
@@ -116,9 +204,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.currentUser = null;
-    SafeStorage.removeItem('currentUser');
-    SafeStorage.removeItem('token');
+    this.clearSession();
     this.router.navigate(['/']);
   }
 

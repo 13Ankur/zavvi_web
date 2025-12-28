@@ -682,3 +682,93 @@
   }
 }
 
+// ============================================
+// DARK MODE OVERRIDES
+// ============================================
+:host-context(.dark-mode) {
+  .category-page {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  }
+
+  .back-btn {
+    background: var(--bg-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--primary-color);
+
+    &:hover {
+      background: rgba(108, 71, 255, 0.15);
+      border-color: var(--primary-color);
+    }
+  }
+
+  .category-header {
+    p {
+      color: var(--text-medium);
+    }
+  }
+
+  .loading-container {
+    p {
+      color: var(--text-medium);
+    }
+  }
+
+  .shop-card {
+    background: var(--bg-primary);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      box-shadow: 0 12px 32px rgba(108, 71, 255, 0.25);
+      border-color: rgba(108, 71, 255, 0.3);
+    }
+
+    .shop-image {
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    }
+
+    .shop-content {
+      background: var(--bg-primary);
+
+      h3,
+      .shop-name {
+        color: var(--text-dark) !important;
+      }
+
+      .description {
+        color: var(--text-medium);
+      }
+    }
+  }
+
+  .empty-message {
+    color: var(--text-medium);
+
+    strong {
+      color: var(--primary-color);
+    }
+  }
+
+  .action-btn-secondary {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+
+    &:hover {
+      background: rgba(108, 71, 255, 0.15);
+    }
+  }
+
+  .suggestions {
+    background: linear-gradient(135deg, rgba(108, 71, 255, 0.1), rgba(91, 134, 229, 0.1));
+
+    .suggestions-title {
+      color: var(--text-dark);
+    }
+
+    .suggestions-list li {
+      color: var(--text-medium);
+    }
+  }
+}
+

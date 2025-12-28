@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewContainerRef, ComponentRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { SeoService } from '../../services/seo.service';
 import { locationsMatch } from '../../utils/location.utils';
 import { SafeStorage } from '../../utils/platform.utils';
 import { environment } from '../../../environments/environment';
+import { LocationModalComponent } from '../../components/location-modal/location-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  private locationModalRef?: ComponentRef<LocationModalComponent>;
   searchTerm: string = '';
   allOffers: any[] = [];
   isLoading: boolean = true;
@@ -75,8 +77,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     public router: Router,
     private apiService: ApiService,
     public authService: AuthService,
-    private locationService: LocationService,
-    private seoService: SeoService
+    public locationService: LocationService, // Public for template access
+    private seoService: SeoService,
+    private viewContainerRef: ViewContainerRef
   ) {
     this.checkScreenSize();
   }
@@ -120,6 +123,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // CRITICAL: Check location FIRST before loading anything
+    if (!this.locationService.hasSelectedLocation()) {
+      console.log('📍 HomePage: No location selected - showing modal and blocking app');
+      // Show location modal and BLOCK app from loading
+      this.checkAndShowLocationModal();
+      // Don't load anything until location is selected
+      return;
+    }
+    
+    console.log('📍 HomePage: Location already selected - loading app normally');
+    
     // Show loading state
     this.isLoading = true;
     this.errorMessage = '';
@@ -204,6 +218,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.slideInterval) {
       clearInterval(this.slideInterval);
     }
+    // Clear location modal if exists
+    if (this.locationModalRef) {
+      this.locationModalRef.destroy();
+    }
     // Clear all prefetch timeouts
     this.prefetchTimeouts.forEach(timeout => clearTimeout(timeout));
     this.prefetchTimeouts.clear();
@@ -239,30 +257,12 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
           }
           
-          // Set default location if no location selected
+          // Do NOT auto-select any location. User must choose via modal.
           if (!this.selectedLocation) {
-            const defaultLocation = locations.find((loc: any) => loc.isDefault === true);
-            if (defaultLocation) {
-              this.selectedLocation = defaultLocation;
-              this.selectedLocationId = defaultLocation.id || defaultLocation.slug;
-              this.currentLocation = defaultLocation.name;
-              this.locationService.setSelectedLocation(defaultLocation);
-              // Set SEO meta with location
-              this.seoService.setHomePageMeta(defaultLocation.name);
-              this.loadCategories();
-              this.loadOffers();
-              this.loadFeaturedShops();
-            } else if (locations.length > 0) {
-              this.selectedLocation = locations[0];
-              this.selectedLocationId = locations[0].id || locations[0].slug;
-              this.currentLocation = locations[0].name;
-              this.locationService.setSelectedLocation(locations[0]);
-              // Set SEO meta with location
-              this.seoService.setHomePageMeta(locations[0].name);
-              this.loadCategories();
-              this.loadOffers();
-              this.loadFeaturedShops();
-            }
+            console.warn('Home: No selected location after load. User must select manually.');
+            this.isLoadingLocations = false;
+            this.isLoading = false;
+            return;
           } else {
             if (!this.selectedLocationId && this.selectedLocation) {
               this.selectedLocationId = this.selectedLocation.id || this.selectedLocation.slug;
@@ -712,5 +712,53 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   get offers() {
     return this.allOffers;
+  }
+
+  /**
+   * Check and show location modal on first visit
+   * CRITICAL: BLOCKS app from loading until location is selected
+   */
+  private checkAndShowLocationModal() {
+    console.log('📍 HomePage: BLOCKING - No location selected, showing modal...');
+    
+    // Small delay to ensure page has loaded
+    setTimeout(() => {
+      this.showLocationModal();
+    }, 500);
+  }
+
+  /**
+   * Show location selection modal
+   * BLOCKS entire app until user selects location
+   */
+  private showLocationModal() {
+    console.log('📍 HomePage: Creating BLOCKING location modal...');
+    
+    try {
+      // Create modal component dynamically
+      this.locationModalRef = this.viewContainerRef.createComponent(LocationModalComponent);
+      
+      // Append to body
+      if (typeof document !== 'undefined') {
+        document.body.appendChild(this.locationModalRef.location.nativeElement);
+      }
+      
+      console.log('📍 HomePage: Location modal created - app is BLOCKED');
+      
+      // Subscribe to location changes to reload page after selection
+      const locationSub = this.locationService.selectedLocation$.subscribe(location => {
+        if (location) {
+          console.log('📍 HomePage: Location selected! Reloading app...');
+          // Location selected - reload the page to start app properly
+          if (typeof window !== 'undefined') {
+            window.location.reload();
+          }
+          locationSub.unsubscribe();
+        }
+      });
+      
+    } catch (error) {
+      console.error('📍 HomePage: Error creating location modal:', error);
+    }
   }
 }

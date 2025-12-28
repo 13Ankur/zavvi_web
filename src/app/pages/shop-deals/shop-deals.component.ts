@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ModalService } from '../../services/modal.service';
+import * as QRCode from 'qrcode';
 import { SeoService } from '../../services/seo.service';
 import { environment } from '../../../environments/environment';
 
@@ -87,9 +88,9 @@ export class ShopDealsComponent implements OnInit {
     );
     
     if (deal) {
-      console.log('✅ Found deal, triggering claim:', deal.title);
-      // Trigger the claim action
-      this.claimDeal(deal);
+      console.log('✅ Found deal, triggering auto-claim:', deal.title);
+      // Trigger the direct claim action (bypass detail page)
+      this.directClaimDeal(deal);
     } else {
       console.warn('⚠️ Deal not found for auto-claim:', dealId);
       // If deal not found yet, wait a bit more and try again
@@ -98,8 +99,8 @@ export class ShopDealsComponent implements OnInit {
           (d.id === dealId) || (d._id === dealId) || (d.dealId === dealId)
         );
         if (retryDeal) {
-          console.log('✅ Found deal on retry, triggering claim:', retryDeal.title);
-          this.claimDeal(retryDeal);
+          console.log('✅ Found deal on retry, triggering auto-claim:', retryDeal.title);
+          this.directClaimDeal(retryDeal);
         }
       }, 2000);
     }
@@ -223,7 +224,21 @@ export class ShopDealsComponent implements OnInit {
   }
 
   async claimDeal(deal: any) {
-    console.log('🎯 Claim Deal clicked:', deal.title);
+    console.log('🎯 View Deal Details clicked:', deal.title);
+    
+    // Navigate to deal detail page (matching mobile app flow)
+    this.router.navigate(['/deal-detail'], {
+      state: {
+        deal: deal,
+        shopId: this.shopId,
+        shopName: this.shopName
+      }
+    });
+  }
+
+  // Keep this method for auto-claim after login
+  async directClaimDeal(deal: any) {
+    console.log('🎯 Direct Claim Deal (auto-claim):', deal.title);
     
     // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
@@ -349,84 +364,164 @@ export class ShopDealsComponent implements OnInit {
     
     this.apiService.generateCoupon(deal.id).subscribe({
       next: (couponData) => {
-        console.log('📦 API Response:', couponData);
+        console.log('📦 Generate API Response:', JSON.stringify(couponData, null, 2));
         
         if (!couponData) {
           console.warn('⚠️ No coupon data received');
-          this.createMockCoupon(deal);
+          this.isGeneratingCoupon = false;
+          this.modalService.error('Failed to generate coupon. Please try again.', 'Error');
+          this.closeQRModal();
           return;
         }
 
-        // Extract coupon code (matching mobile app)
+        // Extract coupon code (MATCHING MOBILE APP EXACTLY)
         this.couponCode = couponData.couponCode || 
                          couponData.code || 
                          `COUPON-${deal.id.substring(0, 8).toUpperCase()}`;
-        
-        // Extract coupon ID and redemption token (matching mobile app exactly)
-        this.couponId = couponData.couponId || couponData._id || couponData.id || '';
-        this.redemptionToken = couponData.redemptionToken || '';
-        
-        // Build vendor redemption URL or use QR code (MATCHING MOBILE APP EXACTLY)
-        if (this.couponId && this.redemptionToken) {
-          this.vendorRedemptionUrl = `https://admin.zavvi.co.in/redeem/${this.couponId}?token=${this.redemptionToken}`;
-          this.qrCodeUrl = this.generateQRCodeUrl(this.vendorRedemptionUrl);
-        } else {
-          // Fallback to coupon code if no redemption credentials
-          this.qrCodeUrl = this.generateQRCodeUrl(this.couponCode);
-        }
         
         // Extract vendor contact
         this.vendorContact = couponData.shop?.contact || 
                             couponData.shop?.phone || 
                             this.vendorContact || '';
         
-        // Log for debugging
-        console.log('✅ Coupon Generated:', {
+        // Extract shop ID from coupon data (MATCHING MOBILE APP - line 193)
+        const shopIdFromCoupon = couponData.shop?.id || couponData.shop?._id || couponData.shopId || this.shopId;
+        
+        console.log('📋 Extracted from generate response:', {
           couponCode: this.couponCode,
-          couponId: this.couponId,
-          hasRedemptionUrl: !!this.vendorRedemptionUrl,
-          qrCodeUrl: this.qrCodeUrl ? 'Generated' : 'Missing',
+          shopIdFromCoupon: shopIdFromCoupon,
+          vendorContact: this.vendorContact
         });
         
-        // Save to redeemed coupons
-        this.saveRedeemedCoupon(deal, couponData);
-        
-        // Hide loading immediately - QR URL is ready (matching mobile app)
-        this.isGeneratingCoupon = false;
+        // IMPORTANT: Save to redeemed coupons FIRST to get redemptionToken
+        // The redemptionToken is generated during save, not during generate
+        this.saveAndGenerateQR(deal, couponData, shopIdFromCoupon);
       },
       error: (error) => {
         console.error('Error generating coupon:', error);
+        this.isGeneratingCoupon = false;
         
         // Check if it's a golden coupon error
         if (error?.error?.isGoldenCoupon && error?.error?.alreadyRedeemed) {
-          this.isGeneratingCoupon = false;
           this.modalService.warning('You have already redeemed this Golden Coupon', 'Already Redeemed');
           this.closeQRModal();
           return;
         }
         
-        // If API fails, create a mock coupon for testing (matching mobile app)
-        console.log('Creating mock coupon due to API error');
-        this.createMockCoupon(deal);
+        // Check for deal expired
+        if (error?.message?.includes('expired') || error?.error?.message?.includes('expired')) {
+          this.modalService.warning('This deal has expired.', 'Deal Expired');
+          this.closeQRModal();
+          return;
+        }
+        
+        // Show proper error message instead of creating mock coupon
+        const errorMessage = error?.error?.message || error?.message || 'Failed to generate coupon. Please try again.';
+        this.modalService.error(errorMessage, 'Error');
+        this.closeQRModal();
       }
     });
   }
 
-  // Helper function matching mobile app exactly
-  private generateQRCodeUrl(data: string): string {
-    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`;
+  // Save coupon and generate QR code with redemption URL (MATCHING MOBILE APP FLOW)
+  private async saveAndGenerateQR(deal: any, couponData: any, shopIdFromCoupon: string) {
+    // Use expiry from couponData if available (backend calculates proper expiry based on deal validity)
+    // Don't use a short default - the backend will calculate proper expiry from deal.validUntil
+    const expiresAt = couponData.expiresAt; // Let backend decide if not provided
+
+    // Generate temporary QR for coupon code
+    const tempQR = await this.generateQRCodeUrl(this.couponCode);
+
+    // Build request data EXACTLY like mobile app (generate-qr.page.ts lines 404-410)
+    const redeemedCouponData: any = {
+      dealId: deal.id,
+      shopId: shopIdFromCoupon, // Use shopId from couponData like mobile app
+      couponCode: this.couponCode,
+      qrCode: tempQR // Mobile app passes qrCodeUrl here
+    };
+    
+    // Only include expiresAt if available from couponData
+    if (expiresAt) {
+      redeemedCouponData.expiresAt = expiresAt;
+    }
+
+    console.log('💾 Saving coupon to get redemption token:', JSON.stringify(redeemedCouponData, null, 2));
+
+    this.apiService.redeemCoupon(redeemedCouponData).subscribe({
+      next: async (response) => {
+        console.log('✅ Coupon saved, FULL response:', JSON.stringify(response, null, 2));
+        
+        // Extract coupon ID and redemption token from the SAVE response
+        // The response format is: { success: true, message: '...', data: { _id, redemptionToken, ... } }
+        const savedCoupon = response?.data || response;
+        
+        console.log('🔍 savedCoupon object:', JSON.stringify(savedCoupon, null, 2));
+        
+        if (savedCoupon) {
+          // Extract coupon ID (this is the RedeemedCoupon ID, NOT the temporary Coupon ID)
+          this.couponId = savedCoupon._id || savedCoupon.id || '';
+          // Extract redemption token (generated by backend during save)
+          this.redemptionToken = savedCoupon.redemptionToken || '';
+          
+          console.log('🔑 Extracted credentials:', {
+            couponId: this.couponId,
+            redemptionToken: this.redemptionToken ? `${this.redemptionToken.substring(0, 10)}...` : 'MISSING!',
+            tokenLength: this.redemptionToken?.length || 0
+          });
+          
+          // Build vendor redemption URL with the token from save response
+          if (this.couponId && this.redemptionToken) {
+            // This is the URL format the vendor portal expects
+            this.vendorRedemptionUrl = `https://admin.zavvi.co.in/redeem/${this.couponId}?token=${this.redemptionToken}`;
+            console.log('🔗 Full vendor redemption URL:', this.vendorRedemptionUrl);
+            console.log('📏 URL length:', this.vendorRedemptionUrl.length, 'characters');
+            
+            // Generate QR code with full URL using local library (not external API)
+            this.qrCodeUrl = await this.generateQRCodeUrl(this.vendorRedemptionUrl);
+            console.log('✅ QR Code generated successfully');
+          } else {
+            // Fallback to coupon code only (vendor portal won't work)
+            console.error('❌ CRITICAL: No redemption token received! QR will not work for vendors.');
+            console.error('Response was:', JSON.stringify(response, null, 2));
+            this.qrCodeUrl = await this.generateQRCodeUrl(this.couponCode);
+          }
+        } else {
+          // Fallback if no saved coupon data
+          console.error('❌ CRITICAL: No saved coupon data returned!');
+          this.qrCodeUrl = await this.generateQRCodeUrl(this.couponCode);
+        }
+        
+        // Now hide loading - QR is ready with proper URL
+        this.isGeneratingCoupon = false;
+      },
+      error: async (error) => {
+        console.error('❌ Error saving coupon:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        // Fallback to coupon code QR if save fails
+        this.qrCodeUrl = await this.generateQRCodeUrl(this.couponCode);
+        this.isGeneratingCoupon = false;
+      }
+    });
   }
 
-  private createMockCoupon(deal: any) {
-    const mockCode = `MOCK-${deal.id.substring(0, 8).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    this.couponCode = mockCode;
-    this.qrCodeUrl = this.generateQRCodeUrl(mockCode);
-    this.isGeneratingCoupon = false;
-    
-    console.log('🧪 Mock coupon created:', {
-      couponCode: mockCode,
-      qrCodeUrl: this.qrCodeUrl
-    });
+  // Helper function to generate QR code using local library (not external API)
+  private async generateQRCodeUrl(data: string): Promise<string> {
+    try {
+      // Generate QR code as data URL using QRCode library
+      const qrDataUrl = await QRCode.toDataURL(data, {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      return qrDataUrl;
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      // Fallback to external API if library fails
+      return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`;
+    }
   }
 
   closeQRModal() {
@@ -496,48 +591,6 @@ export class ShopDealsComponent implements OnInit {
     target.src = fallbackUrl;
   }
   
-  // Save redeemed coupon (matching mobile app structure)
-  private saveRedeemedCoupon(deal: any, couponData: any) {
-    // Use expiry from couponData if available
-    const expiresAt = couponData.expiresAt || new Date(Date.now() + 600000); // Default 10 min
-
-    const redeemedCouponData = {
-      dealId: deal.id,
-      shopId: this.shopId,
-      couponCode: this.couponCode,
-      qrCode: this.qrCodeUrl,
-      expiresAt: expiresAt
-    };
-
-    console.log('Saving redeemed coupon:', redeemedCouponData);
-
-    this.apiService.redeemCoupon(redeemedCouponData).subscribe({
-      next: (response) => {
-        console.log('Coupon saved successfully:', response);
-        
-        // Extract coupon ID and redemption token from the response
-        const savedCoupon = response.data || response;
-        if (savedCoupon) {
-          this.couponId = savedCoupon._id || this.couponId;
-          this.redemptionToken = savedCoupon.redemptionToken || this.redemptionToken;
-          
-          // Update vendor redemption URL if we didn't have it before (matching mobile app)
-          if (this.couponId && this.redemptionToken && !this.vendorRedemptionUrl) {
-            this.vendorRedemptionUrl = `https://admin.zavvi.co.in/redeem/${this.couponId}?token=${this.redemptionToken}`;
-            
-            // Update QR code to include the vendor redemption URL
-            this.qrCodeUrl = this.generateQRCodeUrl(this.vendorRedemptionUrl);
-            
-            console.log('Updated vendor redemption URL from saved response:', this.vendorRedemptionUrl);
-          }
-        }
-      },
-      error: (error) => {
-        console.error('Error saving redeemed coupon:', error);
-        // Don't show error to user - this is a background operation
-      }
-    });
-  }
   
   private showToast(message: string) {
     if (typeof document === 'undefined') {

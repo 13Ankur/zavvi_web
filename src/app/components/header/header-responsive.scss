@@ -400,7 +400,7 @@
 }
 
 // Dark Mode Overrides for Responsive Header
-.dark-mode {
+:host-context(.dark-mode) {
   @media (max-width: 767px) {
     .header-search .search-input {
       background: var(--bg-primary) !important;
