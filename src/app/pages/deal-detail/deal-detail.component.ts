@@ -15,6 +15,7 @@ export class DealDetailComponent implements OnInit {
   deal: any = null;
   shopId: string = '';
   isGenerating: boolean = false;
+  hasCopied: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,7 +26,7 @@ export class DealDetailComponent implements OnInit {
     // Get deal data from navigation state
     const navigation = this.router.getCurrentNavigation();
     console.log('📋 Deal Detail - Navigation state:', navigation?.extras?.state);
-    
+
     if (navigation?.extras?.state) {
       this.deal = navigation.extras.state['deal'];
       this.shopId = navigation.extras.state['shopId'];
@@ -35,7 +36,7 @@ export class DealDetailComponent implements OnInit {
   ngOnInit() {
     console.log('📄 Deal Detail Page - Deal data:', this.deal);
     console.log('🏪 Shop ID:', this.shopId);
-    
+
     // If no deal data, show error and redirect
     if (!this.deal) {
       console.warn('⚠️ No deal data found, redirecting back');
@@ -47,7 +48,7 @@ export class DealDetailComponent implements OnInit {
         this.goBack();
       }, 2000);
     }
-    
+
     // Validate deal has required fields
     if (this.deal && !this.deal.id && !this.deal._id) {
       console.error('❌ Deal missing ID field');
@@ -70,19 +71,19 @@ export class DealDetailComponent implements OnInit {
     if (this.isGenerating) {
       return;
     }
-    
+
     // Validate deal data
     if (!this.deal) {
       this.modalService.error('Deal information is missing', 'Error');
       return;
     }
-    
+
     const dealId = this.deal.id || this.deal._id;
     if (!dealId) {
       this.modalService.error('Deal ID is missing', 'Error');
       return;
     }
-    
+
     // Validate shop ID
     if (!this.shopId) {
       console.error('❌ Shop ID is missing');
@@ -95,7 +96,7 @@ export class DealDetailComponent implements OnInit {
     // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
       this.isGenerating = false;
-      
+
       // Ask user to login
       const confirmed = await this.modalService.confirm(
         'Please login to generate QR code. Would you like to login now?',
@@ -103,7 +104,7 @@ export class DealDetailComponent implements OnInit {
         'Login',
         'Cancel'
       );
-      
+
       if (confirmed) {
         // Save redirect URL with deal ID for auto-claim after login
         const redirectUrl = `/shop-deals/${this.shopId}?claimDeal=${dealId}`;
@@ -122,17 +123,31 @@ export class DealDetailComponent implements OnInit {
     });
   }
 
+  async copyCode() {
+    if (this.deal && this.deal.couponCode) {
+      try {
+        await navigator.clipboard.writeText(this.deal.couponCode);
+        this.hasCopied = true;
+        this.modalService.success('Coupon code copied to clipboard!', 'Copied');
+        setTimeout(() => this.hasCopied = false, 2000);
+      } catch (err) {
+        console.error('Failed to copy code:', err);
+        this.modalService.error('Failed to copy code', 'Error');
+      }
+    }
+  }
+
   formatDate(dateString: string): string {
     if (!dateString) return 'No expiry date';
-    
+
     try {
       const date = new Date(dateString);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return 'Invalid date';
       }
-      
+
       return date.toLocaleDateString('en-IN', {
         day: 'numeric',
         month: 'long',

@@ -17,31 +17,31 @@ export class ApiService {
   constructor(
     private http: HttpClient,
     private cacheService: CacheService
-  ) {}
+  ) { }
 
   private getHeaders(): HttpHeaders {
     const token = SafeStorage.getItem('token');
     let headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    
+
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
-    
+
     return headers;
   }
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred';
-    
+
     console.error('API Error:', {
       status: error.status,
       statusText: error.statusText,
       url: error.url,
       error: error.error
     });
-    
+
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Network error: ${error.error.message}`;
     } else {
@@ -53,7 +53,7 @@ export class ApiService {
         errorMessage = error.message || errorMessage;
       }
     }
-    
+
     const customError: any = new Error(errorMessage);
     customError.status = error.status || 0;
     customError.statusText = error.statusText || '';
@@ -125,7 +125,7 @@ export class ApiService {
   // Category APIs
   getCategories(): Observable<any> {
     const cacheKey = 'categories';
-    return this.cacheService.get(cacheKey, () => 
+    return this.cacheService.get(cacheKey, () =>
       this.http.get(`${this.apiUrl}/categories`, {
         headers: this.getHeaders()
       }).pipe(
@@ -151,7 +151,7 @@ export class ApiService {
   getShops(params?: { category?: string; search?: string; location?: string }): Observable<any> {
     let url = `${this.apiUrl}/shops`;
     const queryParams = new URLSearchParams();
-    
+
     if (params) {
       if (params.category) queryParams.append('category', params.category);
       if (params.search) queryParams.append('search', params.search);
@@ -159,10 +159,10 @@ export class ApiService {
       const queryString = queryParams.toString();
       if (queryString) url += `?${queryString}`;
     }
-    
+
     const cacheKey = `shops_${params?.category || 'all'}_${params?.location || 'all'}_${params?.search || ''}`;
-    
-    return this.cacheService.get(cacheKey, () => 
+
+    return this.cacheService.get(cacheKey, () =>
       this.http.get(url, {
         headers: this.getHeaders()
       }).pipe(
@@ -206,9 +206,9 @@ export class ApiService {
     if (params && params.location) {
       url += `?location=${encodeURIComponent(params.location)}`;
     }
-    
+
     const cacheKey = `featured_shops_${params?.location || 'all'}`;
-    
+
     return this.cacheService.get(cacheKey, () =>
       this.http.get(url, {
         headers: this.getHeaders()
@@ -285,17 +285,20 @@ export class ApiService {
     );
   }
 
-  getDeals(params?: { location?: string; featured?: boolean }): Observable<any> {
+  getDeals(params?: { category?: string; search?: string; shop?: string; location?: string; featured?: boolean }): Observable<any> {
     let url = `${this.apiUrl}/deals`;
     const queryParams = new URLSearchParams();
-    
+
     if (params) {
+      if (params.category) queryParams.append('category', params.category);
+      if (params.search) queryParams.append('search', params.search);
+      if (params.shop) queryParams.append('shop', params.shop);
       if (params.location) queryParams.append('location', params.location);
       if (params.featured) queryParams.append('featured', 'true');
       const queryString = queryParams.toString();
       if (queryString) url += `?${queryString}`;
     }
-    
+
     return this.http.get(url, {
       headers: this.getHeaders()
     }).pipe(
@@ -362,7 +365,7 @@ export class ApiService {
       const queryString = queryParams.toString();
       if (queryString) url += `?${queryString}`;
     }
-    
+
     return this.http.get(url, {
       headers: this.getHeaders()
     }).pipe(
@@ -406,5 +409,49 @@ export class ApiService {
   prefetchCategoryData(category: string, location?: string): void {
     const cacheKey = `shops_${category}_${location || 'all'}_`;
     this.cacheService.prefetch(cacheKey, () => this.getShops({ category, location }));
+  }
+
+  /**
+   * Online Coupon APIs
+   */
+  getOnlineCoupons(params?: { category?: string; search?: string }): Observable<any> {
+    let url = `${this.apiUrl}/online-coupons`;
+    if (params) {
+      const queryParams = new URLSearchParams();
+      if (params.category) queryParams.append('category', params.category);
+      if (params.search) queryParams.append('search', params.search);
+      const queryString = queryParams.toString();
+      if (queryString) url += `?${queryString}`;
+    }
+
+    return this.http.get(url, {
+      headers: this.getHeaders()
+    }).pipe(
+      map((response: any) => response.data || response),
+      catchError(this.handleError)
+    );
+  }
+
+  redeemOnlineCoupon(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/online-coupons/${id}/redeem`, {}, {
+      headers: this.getHeaders()
+    }).pipe(
+      map((response: any) => response),
+      catchError(this.handleError)
+    );
+  }
+
+  getOnlineShops(params?: { category?: string }): Observable<any> {
+    let url = `${this.apiUrl}/online-shops`;
+    if (params && params.category) {
+      url += `?category=${params.category}`;
+    }
+
+    return this.http.get(url, {
+      headers: this.getHeaders()
+    }).pipe(
+      map((response: any) => response.data || response),
+      catchError(this.handleError)
+    );
   }
 }

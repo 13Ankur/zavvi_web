@@ -1,0 +1,47 @@
+<div class="online-coupons-page">
+    <div class="header">
+        <button class="back-btn" (click)="goBack()">←</button>
+        <h1>{{ categoryName }} Online Deals</h1>
+    </div>
+
+    <div *ngIf="isLoading" class="loading">Loading deals...</div>
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <div class="coupons-grid" *ngIf="!isLoading && coupons.length > 0">
+        <div class="coupon-card" *ngFor="let coupon of coupons">
+            <div class="brand-info">
+                <img [src]="coupon.brandLogo" [alt]="coupon.brandName" class="brand-logo">
+                <div class="brand-details">
+                    <h3>{{ coupon.brandName }}</h3>
+                    <p class="discount">{{ coupon.discount }}</p>
+                </div>
+            </div>
+
+            <div class="deal-info">
+                <h4>{{ coupon.title }}</h4>
+                <p>{{ coupon.description }}</p>
+            </div>
+
+            <div class="copy-section">
+                <div class="code-box" *ngIf="coupon.couponCode">
+                    <code>{{ coupon.couponCode }}</code>
+                </div>
+                <button class="copy-btn" (click)="copyCouponCode(coupon.couponCode, coupon.id)"
+                    *ngIf="coupon.couponCode">
+                    {{ copiedCode === coupon.couponCode ? 'COPIED!' : 'COPY CODE' }}
+                </button>
+                <a [href]="coupon.redeemUrl" target="_blank" class="redeem-link" *ngIf="coupon.redeemUrl">
+                    Redeem on {{ coupon.brandName }} Website →
+                </a>
+            </div>
+
+            <div class="expiry" *ngIf="coupon.validUntil">
+                Exp: {{ coupon.validUntil | date:'mediumDate' }}
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && coupons.length === 0">
+        No online deals available for this category yet.
+    </div>
+</div>

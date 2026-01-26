@@ -197,6 +197,7 @@ export class ShopDealsComponent implements OnInit {
             validUntil: deal.validUntil ? new Date(deal.validUntil).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A',
             terms: deal.terms || '',
             couponCode: deal.couponCode || '',
+            isOnline: (response.shop?.category?.isOnline) || false,
             isGoldenCoupon: deal.isGoldenCoupon || false,
             maxRedemptions: deal.maxRedemptions || null,
             currentRedemptions: deal.currentRedemptions || 0

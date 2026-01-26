@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/category/category.component').then(m => m.CategoryComponent)
   },
   {
+    path: 'online-coupons/:category',
+    loadComponent: () => import('./pages/online-coupons/online-coupons.component').then(m => m.OnlineCouponsComponent)
+  },
+  {
     path: 'shop/:id',
     loadComponent: () => import('./pages/shop-details/shop-details.component').then(m => m.ShopDetailsComponent)
   },

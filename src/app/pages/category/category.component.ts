@@ -99,9 +99,32 @@ export class CategoryComponent implements OnInit {
 
         console.log('🖼️ Processed shops with full image URLs:', this.shops);
 
+        // Sort shops: Premium partners first, then regular partners
+        this.sortShops();
+
         if (this.shops.length > 0 && this.shops[0].category) {
           this.categoryName = this.shops[0].category.name;
-          console.log('📂 Category name:', this.categoryName);
+          console.log('📂 Category name from shops:', this.categoryName);
+
+          // Check if this is an online category (web app)
+          if ((this.shops[0].category as any).isOnline) {
+            console.log('Online category detected from shop metadata, redirecting...');
+            this.router.navigate(['/online-coupons', categorySlug]);
+            return;
+          }
+        } else {
+          // If no shops, we still need to check if the category itself is marked as online
+          this.apiService.getCategory(categorySlug).subscribe({
+            next: (category) => {
+              if (category) {
+                this.categoryName = category.name;
+                if (category.isOnline) {
+                  console.log('Online category detected from category API, redirecting...');
+                  this.router.navigate(['/online-coupons', categorySlug]);
+                }
+              }
+            }
+          });
         }
 
         this.isLoading = false;
@@ -110,6 +133,20 @@ export class CategoryComponent implements OnInit {
         console.error('❌ Error loading category shops:', error);
         this.isLoading = false;
       }
+    });
+  }
+
+  sortShops() {
+    // Sort shops with premium partners first, then regular partners
+    this.shops.sort((a, b) => {
+      // Premium partners come first
+      if (a.isPremium && !b.isPremium) return -1;
+      if (!a.isPremium && b.isPremium) return 1;
+
+      // If both are same type (both premium or both regular), sort alphabetically by title
+      const aTitle = a.title || a.name || '';
+      const bTitle = b.title || b.name || '';
+      return aTitle.localeCompare(bTitle);
     });
   }
 

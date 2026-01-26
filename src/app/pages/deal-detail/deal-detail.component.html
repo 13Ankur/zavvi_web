@@ -12,21 +12,21 @@
     <span class="material-icons">star</span>
     <span>GOLDEN OFFER</span>
   </div>
-  
+
   <!-- Header Section -->
   <div class="header-section">
     <!-- Discount Badge (Only for non-golden) -->
     <div class="discount-badge-pill" *ngIf="!deal.isGoldenCoupon && deal.discount">
       {{ deal.discount }}
     </div>
-    
+
     <!-- Title -->
     <h1 class="deal-title" [class.golden-title]="deal.isGoldenCoupon">{{ deal.title }}</h1>
-    
+
     <!-- Description -->
     <p class="deal-description" [class.golden-description]="deal.isGoldenCoupon">{{ deal.description }}</p>
   </div>
-  
+
   <!-- Details Section -->
   <div class="details-section">
     <!-- Golden Warning Card -->
@@ -37,7 +37,7 @@
         <p class="warning-text">One-time use only • Limited to {{ deal.maxRedemptions || '∞' }} users</p>
       </div>
     </div>
-    
+
     <!-- Valid Until Card -->
     <div class="info-card" [class.golden-info-card]="deal.isGoldenCoupon" *ngIf="deal.validUntil">
       <div class="info-card-header">
@@ -46,7 +46,7 @@
       </div>
       <div class="info-value">{{ formatDate(deal.validUntil) }}</div>
     </div>
-    
+
     <!-- Terms Card -->
     <div class="info-card terms-card" [class.golden-info-card]="deal.isGoldenCoupon" *ngIf="deal.terms">
       <div class="info-card-header">
@@ -56,20 +56,30 @@
       <div class="info-value terms-text">{{ deal.terms }}</div>
     </div>
   </div>
-  
+
   <!-- Fixed Action Button at Bottom -->
   <div class="button-container" [class.golden-button-container]="deal.isGoldenCoupon">
-    <button 
-      class="action-btn" 
-      [class.golden-action-btn]="deal.isGoldenCoupon"
-      [disabled]="isGenerating"
-      [class.btn-loading]="isGenerating"
-      (click)="generateQRCode()"
-      [attr.aria-busy]="isGenerating">
-      <span class="material-icons" *ngIf="!isGenerating">qr_code</span>
-      <span class="material-icons rotating" *ngIf="isGenerating">hourglass_empty</span>
-      <span>{{ isGenerating ? 'Processing...' : 'Generate QR Code' }}</span>
-    </button>
+    <!-- Online Deal: Copy Code -->
+    <ng-container *ngIf="deal.isOnline; else offlineDeal">
+      <button class="action-btn copy-btn" [class.golden-action-btn]="deal.isGoldenCoupon"
+        [class.btn-success]="hasCopied" (click)="copyCode()">
+        <span class="material-icons">{{ hasCopied ? 'check' : 'content_copy' }}</span>
+        <span>{{ hasCopied ? 'Code Copied!' : 'Copy Coupon Code' }}</span>
+      </button>
+      <p class="online-hint" *ngIf="deal.couponCode" style="text-align: center; margin-top: 10px; color: #666;">
+        Use code: <strong>{{ deal.couponCode }}</strong>
+      </p>
+    </ng-container>
+
+    <!-- Offline Deal: Generate QR -->
+    <ng-template #offlineDeal>
+      <button class="action-btn" [class.golden-action-btn]="deal.isGoldenCoupon" [disabled]="isGenerating"
+        [class.btn-loading]="isGenerating" (click)="generateQRCode()" [attr.aria-busy]="isGenerating">
+        <span class="material-icons" *ngIf="!isGenerating">qr_code</span>
+        <span class="material-icons rotating" *ngIf="isGenerating">hourglass_empty</span>
+        <span>{{ isGenerating ? 'Processing...' : 'Generate QR Code' }}</span>
+      </button>
+    </ng-template>
   </div>
 </div>
 
@@ -81,4 +91,3 @@
     <p>We couldn't find the deal you're looking for.</p>
   </div>
 </div>
-

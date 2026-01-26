@@ -403,7 +403,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
             console.log('📂 Categories found:', categoryMap.size);
 
-            this.allOffers = Array.from(categoryMap.values()).map((shop: any) => ({
+            // Filter to show only premium partners in Exclusive Offers
+            const premiumShops = Array.from(categoryMap.values()).filter((shop: any) => shop.isPremium === true);
+
+            this.allOffers = premiumShops.map((shop: any) => ({
               id: shop._id || shop.id,
               title: shop.title || shop.name || 'Untitled',
               discount: shop.discount || shop.discountPercentage || '0%',
@@ -411,6 +414,8 @@ export class HomeComponent implements OnInit, OnDestroy {
               category: shop.category,
               shop: shop
             }));
+
+            console.log('✨ Premium partners in Exclusive Offers:', this.allOffers.length);
           }
 
           console.log('🎯 Final offers count:', this.allOffers.length);
@@ -457,14 +462,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.apiService.getFeaturedShops(params).subscribe({
       next: (shops) => {
         if (shops && Array.isArray(shops)) {
-          this.bannerShops = shops.map((shop: any) => ({
-            id: shop._id || shop.id,
-            title: shop.title || shop.name,
-            discount: shop.discount,
-            image: shop.image || shop.bannerImage || shop.logo,
-            logo: shop.logo,
-            isPremium: shop.isPremium // Map premium status
-          }));
+          this.bannerShops = shops
+            .map((shop: any) => ({
+              id: shop._id || shop.id,
+              title: shop.title || shop.name,
+              discount: shop.discount,
+              image: shop.image || shop.bannerImage || shop.logo,
+              logo: shop.logo,
+              isPremium: shop.isPremium // Map premium status
+            }))
+            .filter((shop: any) => shop.isPremium === true);
         } else {
           console.warn('Featured shops response is not an array:', shops);
           this.bannerShops = [];
