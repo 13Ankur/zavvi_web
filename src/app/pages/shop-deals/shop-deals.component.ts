@@ -18,6 +18,7 @@ import { environment } from '../../../environments/environment';
 export class ShopDealsComponent implements OnInit {
   shopId: string = '';
   shopName: string = '';
+  isPremium: boolean = false;
   deals: any[] = [];
   isLoading: boolean = true;
   dealsNotFound: boolean = false;
@@ -41,7 +42,7 @@ export class ShopDealsComponent implements OnInit {
     private authService: AuthService,
     private modalService: ModalService,
     private seoService: SeoService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -83,10 +84,10 @@ export class ShopDealsComponent implements OnInit {
 
   autoClaimDeal(dealId: string) {
     // Find the deal in the loaded deals
-    const deal = this.deals.find(d => 
+    const deal = this.deals.find(d =>
       (d.id === dealId) || (d._id === dealId) || (d.dealId === dealId)
     );
-    
+
     if (deal) {
       console.log('✅ Found deal, triggering auto-claim:', deal.title);
       // Trigger the direct claim action (bypass detail page)
@@ -95,7 +96,7 @@ export class ShopDealsComponent implements OnInit {
       console.warn('⚠️ Deal not found for auto-claim:', dealId);
       // If deal not found yet, wait a bit more and try again
       setTimeout(() => {
-        const retryDeal = this.deals.find(d => 
+        const retryDeal = this.deals.find(d =>
           (d.id === dealId) || (d._id === dealId) || (d.dealId === dealId)
         );
         if (retryDeal) {
@@ -111,11 +112,11 @@ export class ShopDealsComponent implements OnInit {
       next: (shop) => {
         this.shopName = shop.title || shop.name || 'Shop';
         this.vendorContact = shop.contact || shop.phone || '';
-        
+
         // Update SEO for shop deals page
         const categoryName = shop.category?.name || 'Deals';
         this.seoService.setShopPageMeta(this.shopName, categoryName);
-        
+
         this.loadDeals(shopId);
       },
       error: (error) => {
@@ -130,12 +131,12 @@ export class ShopDealsComponent implements OnInit {
       next: (response) => {
         let dealsData: any[] = [];
         let shopImage = '';
-        
+
         if (Array.isArray(response)) {
           dealsData = response;
         } else if (response.data) {
           dealsData = response.data;
-          
+
           // Extract shop info from response
           if (response.shop) {
             if (!this.shopName) {
@@ -146,11 +147,11 @@ export class ShopDealsComponent implements OnInit {
             console.log('🏪 Shop image from API:', shopImage);
           }
         }
-        
+
         this.deals = dealsData.map((deal: any) => {
           // Priority: deal.image > shop.image > fallback placeholder
           let rawImage = '';
-          
+
           // Check deal's own image fields first
           if (deal.image && deal.image.trim() && deal.image.toLowerCase() !== 'null') {
             rawImage = deal.image;
@@ -162,31 +163,31 @@ export class ShopDealsComponent implements OnInit {
             // Fallback to shop image
             rawImage = shopImage;
           }
-          
+
           let imageUrl = rawImage;
-          
+
           // Convert relative URLs to absolute
           if (rawImage && !rawImage.startsWith('http')) {
             const baseUrl = environment.apiUrl.replace('/api', '');
             imageUrl = rawImage.startsWith('/') ? `${baseUrl}${rawImage}` : `${baseUrl}/${rawImage}`;
           }
-          
+
           // If still no image, use placeholder
           if (!imageUrl || imageUrl.trim() === '') {
             const firstLetter = deal.title ? deal.title.charAt(0).toUpperCase() : 'D';
             imageUrl = `https://ui-avatars.com/api/?name=${firstLetter}&size=400&background=6C47FF&color=ffffff&bold=true&format=png`;
           }
-          
-          console.log(`🖼️ Deal "${deal.title}":`, { 
+
+          console.log(`🖼️ Deal "${deal.title}":`, {
             dealImage: deal.image,
             dealImageUrl: deal.imageUrl,
             dealBanner: deal.banner,
             shopImage: shopImage,
             rawImage: rawImage,
             finalImage: imageUrl,
-            hasValidImage: !!rawImage 
+            hasValidImage: !!rawImage
           });
-          
+
           return {
             id: deal._id || deal.id,
             title: deal.title,
@@ -201,13 +202,13 @@ export class ShopDealsComponent implements OnInit {
             currentRedemptions: deal.currentRedemptions || 0
           };
         });
-        
+
         if (this.deals.length === 0) {
           this.dealsNotFound = true;
         }
         this.isLoading = false;
         console.log('Deals loaded:', this.deals.length);
-        
+
         // Check if user just logged in and needs to claim a deal
         this.checkForPendingClaim();
       },
@@ -225,7 +226,7 @@ export class ShopDealsComponent implements OnInit {
 
   async claimDeal(deal: any) {
     console.log('🎯 View Deal Details clicked:', deal.title);
-    
+
     // Navigate to deal detail page (matching mobile app flow)
     this.router.navigate(['/deal-detail'], {
       state: {
@@ -239,7 +240,7 @@ export class ShopDealsComponent implements OnInit {
   // Keep this method for auto-claim after login
   async directClaimDeal(deal: any) {
     console.log('🎯 Direct Claim Deal (auto-claim):', deal.title);
-    
+
     // Check if user is logged in
     if (!this.authService.isLoggedIn()) {
       console.log('❌ User not logged in');
@@ -262,14 +263,14 @@ export class ShopDealsComponent implements OnInit {
     }
 
     console.log('✅ User logged in, opening modal');
-    
+
     // Clear previous data (matching mobile app)
     this.qrCodeUrl = '';
     this.couponCode = '';
     this.vendorRedemptionUrl = '';
     this.couponId = '';
     this.redemptionToken = '';
-    
+
     // Set state
     this.selectedDeal = deal;
     this.isGeneratingCoupon = true;
@@ -281,12 +282,12 @@ export class ShopDealsComponent implements OnInit {
 
   checkForExistingActiveCoupon(deal: any) {
     console.log('🔍 Checking for existing active coupon...');
-    
+
     this.apiService.getRedeemedCoupons({ status: 'active' }).subscribe({
       next: (response) => {
         console.log('📦 Existing coupons response:', response);
         const coupons = response?.data || response || [];
-        const existingCoupon = coupons.find((coupon: any) => 
+        const existingCoupon = coupons.find((coupon: any) =>
           coupon.deal?._id === deal.id || coupon.deal === deal.id
         );
 
@@ -318,7 +319,7 @@ export class ShopDealsComponent implements OnInit {
 
   checkGoldenCouponEligibility(deal: any) {
     console.log('🌟 Checking golden coupon eligibility:', deal.isGoldenCoupon);
-    
+
     if (!deal.isGoldenCoupon) {
       console.log('✅ Regular deal, proceeding directly');
       // Not a golden coupon, proceed directly
@@ -327,21 +328,21 @@ export class ShopDealsComponent implements OnInit {
     }
 
     console.log('🏅 Checking golden coupon eligibility via API...');
-    
+
     this.apiService.checkGoldenCouponEligibility(deal.id).subscribe({
       next: (eligibilityCheck) => {
         console.log('📊 Eligibility check result:', eligibilityCheck);
-        
+
         if (!eligibilityCheck.canRedeem) {
           console.log('❌ Cannot redeem golden coupon');
           this.isGeneratingCoupon = false;
-          
+
           if (eligibilityCheck.alreadyRedeemed) {
             this.modalService.warning('You have already redeemed this Golden Coupon', 'Already Redeemed');
           } else if (eligibilityCheck.limitReached) {
             this.modalService.warning('This Golden Coupon has reached its redemption limit', 'Limit Reached');
           }
-          
+
           this.closeQRModal();
           return;
         }
@@ -361,11 +362,11 @@ export class ShopDealsComponent implements OnInit {
 
   generateCouponFromAPI(deal: any) {
     console.log('🎫 Generating coupon via API for deal:', deal.id);
-    
+
     this.apiService.generateCoupon(deal.id).subscribe({
       next: (couponData) => {
         console.log('📦 Generate API Response:', JSON.stringify(couponData, null, 2));
-        
+
         if (!couponData) {
           console.warn('⚠️ No coupon data received');
           this.isGeneratingCoupon = false;
@@ -375,24 +376,24 @@ export class ShopDealsComponent implements OnInit {
         }
 
         // Extract coupon code (MATCHING MOBILE APP EXACTLY)
-        this.couponCode = couponData.couponCode || 
-                         couponData.code || 
-                         `COUPON-${deal.id.substring(0, 8).toUpperCase()}`;
-        
+        this.couponCode = couponData.couponCode ||
+          couponData.code ||
+          `COUPON-${deal.id.substring(0, 8).toUpperCase()}`;
+
         // Extract vendor contact
-        this.vendorContact = couponData.shop?.contact || 
-                            couponData.shop?.phone || 
-                            this.vendorContact || '';
-        
+        this.vendorContact = couponData.shop?.contact ||
+          couponData.shop?.phone ||
+          this.vendorContact || '';
+
         // Extract shop ID from coupon data (MATCHING MOBILE APP - line 193)
         const shopIdFromCoupon = couponData.shop?.id || couponData.shop?._id || couponData.shopId || this.shopId;
-        
+
         console.log('📋 Extracted from generate response:', {
           couponCode: this.couponCode,
           shopIdFromCoupon: shopIdFromCoupon,
           vendorContact: this.vendorContact
         });
-        
+
         // IMPORTANT: Save to redeemed coupons FIRST to get redemptionToken
         // The redemptionToken is generated during save, not during generate
         this.saveAndGenerateQR(deal, couponData, shopIdFromCoupon);
@@ -400,21 +401,21 @@ export class ShopDealsComponent implements OnInit {
       error: (error) => {
         console.error('Error generating coupon:', error);
         this.isGeneratingCoupon = false;
-        
+
         // Check if it's a golden coupon error
         if (error?.error?.isGoldenCoupon && error?.error?.alreadyRedeemed) {
           this.modalService.warning('You have already redeemed this Golden Coupon', 'Already Redeemed');
           this.closeQRModal();
           return;
         }
-        
+
         // Check for deal expired
         if (error?.message?.includes('expired') || error?.error?.message?.includes('expired')) {
           this.modalService.warning('This deal has expired.', 'Deal Expired');
           this.closeQRModal();
           return;
         }
-        
+
         // Show proper error message instead of creating mock coupon
         const errorMessage = error?.error?.message || error?.message || 'Failed to generate coupon. Please try again.';
         this.modalService.error(errorMessage, 'Error');
@@ -439,7 +440,7 @@ export class ShopDealsComponent implements OnInit {
       couponCode: this.couponCode,
       qrCode: tempQR // Mobile app passes qrCodeUrl here
     };
-    
+
     // Only include expiresAt if available from couponData
     if (expiresAt) {
       redeemedCouponData.expiresAt = expiresAt;
@@ -450,32 +451,32 @@ export class ShopDealsComponent implements OnInit {
     this.apiService.redeemCoupon(redeemedCouponData).subscribe({
       next: async (response) => {
         console.log('✅ Coupon saved, FULL response:', JSON.stringify(response, null, 2));
-        
+
         // Extract coupon ID and redemption token from the SAVE response
         // The response format is: { success: true, message: '...', data: { _id, redemptionToken, ... } }
         const savedCoupon = response?.data || response;
-        
+
         console.log('🔍 savedCoupon object:', JSON.stringify(savedCoupon, null, 2));
-        
+
         if (savedCoupon) {
           // Extract coupon ID (this is the RedeemedCoupon ID, NOT the temporary Coupon ID)
           this.couponId = savedCoupon._id || savedCoupon.id || '';
           // Extract redemption token (generated by backend during save)
           this.redemptionToken = savedCoupon.redemptionToken || '';
-          
+
           console.log('🔑 Extracted credentials:', {
             couponId: this.couponId,
             redemptionToken: this.redemptionToken ? `${this.redemptionToken.substring(0, 10)}...` : 'MISSING!',
             tokenLength: this.redemptionToken?.length || 0
           });
-          
+
           // Build vendor redemption URL with the token from save response
           if (this.couponId && this.redemptionToken) {
             // This is the URL format the vendor portal expects
             this.vendorRedemptionUrl = `https://admin.zavvi.co.in/redeem/${this.couponId}?token=${this.redemptionToken}`;
             console.log('🔗 Full vendor redemption URL:', this.vendorRedemptionUrl);
             console.log('📏 URL length:', this.vendorRedemptionUrl.length, 'characters');
-            
+
             // Generate QR code with full URL using local library (not external API)
             this.qrCodeUrl = await this.generateQRCodeUrl(this.vendorRedemptionUrl);
             console.log('✅ QR Code generated successfully');
@@ -490,7 +491,7 @@ export class ShopDealsComponent implements OnInit {
           console.error('❌ CRITICAL: No saved coupon data returned!');
           this.qrCodeUrl = await this.generateQRCodeUrl(this.couponCode);
         }
-        
+
         // Now hide loading - QR is ready with proper URL
         this.isGeneratingCoupon = false;
       },
@@ -580,7 +581,7 @@ export class ShopDealsComponent implements OnInit {
   onImageError(event: Event, deal: any) {
     const target = event.target as HTMLImageElement;
     if (!target) return;
-    
+
     console.error(`❌ Image failed to load for deal: "${deal?.title}"`, {
       attemptedUrl: target.src,
       dealObject: deal
@@ -590,13 +591,13 @@ export class ShopDealsComponent implements OnInit {
     console.log(`🔄 Using fallback avatar: ${fallbackUrl}`);
     target.src = fallbackUrl;
   }
-  
-  
+
+
   private showToast(message: string) {
     if (typeof document === 'undefined') {
       return;
     }
-    
+
     const toast = document.createElement('div');
     toast.textContent = message;
     toast.setAttribute('role', 'status');
@@ -618,14 +619,14 @@ export class ShopDealsComponent implements OnInit {
       font-weight: 600;
     `;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
       toast.style.opacity = '0';
       toast.style.transition = 'opacity 0.3s ease';
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
-  
+
   // Track by function for better performance
   trackByDealId(index: number, deal: any): string {
     return deal.id || deal._id || index.toString();

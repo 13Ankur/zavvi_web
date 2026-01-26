@@ -26,15 +26,15 @@
   margin-bottom: 24px;
   transition: all 0.3s ease;
   font-size: 1rem;
-  
+
   .material-icons {
     font-size: 20px;
   }
-  
+
   .back-text {
     display: inline;
   }
-  
+
   &:hover {
     background: rgba(108, 71, 255, 0.05);
     border-color: #6C47FF;
@@ -45,7 +45,7 @@
     outline: 2px solid #FFD700;
     outline-offset: 2px;
   }
-  
+
   &:active {
     transform: translateX(-5px);
   }
@@ -55,7 +55,7 @@
 .category-header {
   text-align: center;
   margin-bottom: 48px;
-  
+
   h1 {
     font-size: 2.5rem;
     font-weight: 800;
@@ -66,7 +66,7 @@
     background-clip: text;
     line-height: 1.2;
   }
-  
+
   p {
     font-size: 1.125rem;
     color: #666;
@@ -78,7 +78,7 @@
 .loading-container {
   text-align: center;
   padding: 100px 20px;
-  
+
   .spinner {
     width: 60px;
     height: 60px;
@@ -88,7 +88,7 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
-  
+
   p {
     color: #666;
     font-size: 1.125rem;
@@ -97,7 +97,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Shops Grid
@@ -114,22 +116,22 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  
+
   &:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 32px rgba(108, 71, 255, 0.15);
     border-color: rgba(108, 71, 255, 0.2);
   }
-  
+
   &:focus {
     outline: 3px solid #FFD700;
     outline-offset: 2px;
   }
-  
+
   &:active {
     transform: translateY(-3px);
   }
-  
+
   .shop-image {
     height: 200px;
     background: linear-gradient(135deg, #f5f7fa, #e8ecf1);
@@ -138,35 +140,93 @@
     justify-content: center;
     overflow: hidden;
     position: relative;
-    
+
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
-      
+
       // Show loading state
-      &[src=""], &:not([src]) {
+      &[src=""],
+      &:not([src]) {
         opacity: 0;
       }
-      
+
       // Image loaded successfully
       &[src]:not([src=""]) {
         opacity: 1;
       }
     }
+
+    // Premium Badge
+    .premium-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+
+      .badge-content {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(30, 30, 30, 0.85);
+        backdrop-filter: blur(8px);
+        padding: 5px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(212, 175, 55, 0.6);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .badge-text {
+        color: #D4AF37;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+    }
   }
-  
+
+  // Premium Badge
+  .premium-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+
+    .badge-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(30, 30, 30, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 5px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .badge-text {
+      color: #D4AF37;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+  }
+
+
   &:hover .shop-image img {
     transform: scale(1.05);
   }
-  
+
   .shop-content {
     padding: 20px;
     position: relative;
     z-index: 1;
     background: white;
-    
+
     h3,
     .shop-name {
       font-size: 1.25rem;
@@ -186,7 +246,7 @@
       font-family: inherit !important;
       letter-spacing: normal !important;
     }
-    
+
     .description {
       color: #718096;
       font-size: 0.875rem;
@@ -198,7 +258,7 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    
+
     .view-btn {
       width: 100%;
       padding: 12px 20px;
@@ -214,21 +274,21 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      
+
       .material-icons {
         font-size: 20px;
       }
-      
+
       &:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(108, 71, 255, 0.3);
       }
-      
+
       &:focus-visible {
         outline: 2px solid #FFD700;
         outline-offset: 2px;
       }
-      
+
       &:active {
         transform: translateY(0);
       }
@@ -259,7 +319,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   .empty-icon {
     font-size: 80px;
     background: linear-gradient(135deg, #6C47FF, #5b86e5);
@@ -270,28 +330,28 @@
     z-index: 2;
     animation: float 3s ease-in-out infinite;
   }
-  
+
   .icon-circle {
     position: absolute;
     border-radius: 50%;
     border: 2px solid;
     animation: pulse 2s ease-in-out infinite;
   }
-  
+
   .circle-1 {
     width: 100px;
     height: 100px;
     border-color: rgba(108, 71, 255, 0.3);
     animation-delay: 0s;
   }
-  
+
   .circle-2 {
     width: 130px;
     height: 130px;
     border-color: rgba(91, 134, 229, 0.2);
     animation-delay: 0.5s;
   }
-  
+
   .circle-3 {
     width: 160px;
     height: 160px;
@@ -301,19 +361,25 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.1);
     opacity: 0.5;
@@ -336,7 +402,7 @@
   color: #4a5568;
   line-height: 1.8;
   margin: 0 0 32px 0;
-  
+
   strong {
     color: #6C47FF;
     font-weight: 600;
@@ -363,11 +429,11 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   .material-icons {
     font-size: 20px;
   }
-  
+
   &:active {
     transform: scale(0.95);
   }
@@ -377,7 +443,7 @@
   background: linear-gradient(135deg, #6C47FF, #5b86e5);
   color: white;
   box-shadow: 0 6px 20px rgba(108, 71, 255, 0.3);
-  
+
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(108, 71, 255, 0.4);
@@ -388,7 +454,7 @@
   background: white;
   color: #6C47FF;
   border: 2px solid #6C47FF;
-  
+
   &:hover {
     background: rgba(108, 71, 255, 0.05);
     transform: translateY(-3px);
@@ -401,7 +467,7 @@
   padding: 24px;
   border-radius: 16px;
   border-left: 4px solid #6C47FF;
-  
+
   .suggestions-title {
     display: flex;
     align-items: center;
@@ -411,13 +477,13 @@
     color: #2d3748;
     margin: 0 0 16px 0;
     font-size: 1rem;
-    
+
     .material-icons {
       font-size: 22px;
       color: #FFD700;
     }
   }
-  
+
   .suggestions-list {
     list-style: none;
     padding: 0;
@@ -425,7 +491,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    
+
     li {
       display: flex;
       align-items: center;
@@ -433,7 +499,7 @@
       color: #4a5568;
       font-size: 0.9375rem;
       text-align: left;
-      
+
       .material-icons {
         font-size: 20px;
         color: #6C47FF;
@@ -454,11 +520,11 @@
 
   .category-header {
     margin-bottom: 40px;
-    
+
     h1 {
       font-size: 2.25rem;
     }
-    
+
     p {
       font-size: 1.125rem;
     }
@@ -473,10 +539,10 @@
     .shop-image {
       height: 200px;
     }
-    
+
     .shop-content {
       padding: 18px;
-      
+
       h3 {
         font-size: 1.25rem !important;
       }
@@ -496,11 +562,11 @@
 
   .category-header {
     margin-bottom: 32px;
-    
+
     h1 {
       font-size: 1.75rem;
     }
-    
+
     p {
       font-size: 1rem;
     }
@@ -515,10 +581,10 @@
     .shop-image {
       height: 180px;
     }
-    
+
     .shop-content {
       padding: 16px;
-      
+
       h3 {
         font-size: 1.125rem !important;
         color: #2d3748 !important;
@@ -539,21 +605,21 @@
     width: 120px;
     height: 120px;
     margin-bottom: 24px;
-    
+
     .empty-icon {
       font-size: 60px;
     }
-    
+
     .circle-1 {
       width: 80px;
       height: 80px;
     }
-    
+
     .circle-2 {
       width: 100px;
       height: 100px;
     }
-    
+
     .circle-3 {
       width: 120px;
       height: 120px;
@@ -574,7 +640,7 @@
     flex-direction: column;
     gap: 10px;
     margin-bottom: 32px;
-    
+
     .action-btn {
       width: 100%;
       justify-content: center;
@@ -585,15 +651,15 @@
 
   .suggestions {
     padding: 20px 16px;
-    
+
     .suggestions-title {
       font-size: 0.9375rem;
       margin-bottom: 12px;
     }
-    
+
     .suggestions-list {
       gap: 10px;
-      
+
       li {
         font-size: 0.875rem;
       }
@@ -609,11 +675,11 @@
 
   .category-header {
     margin-bottom: 24px;
-    
+
     h1 {
       font-size: 1.5rem;
     }
-    
+
     p {
       font-size: 0.9375rem;
     }
@@ -622,21 +688,21 @@
   .empty-icon-wrapper {
     width: 100px;
     height: 100px;
-    
+
     .empty-icon {
       font-size: 50px;
     }
-    
+
     .circle-1 {
       width: 70px;
       height: 70px;
     }
-    
+
     .circle-2 {
       width: 85px;
       height: 85px;
     }
-    
+
     .circle-3 {
       width: 100px;
       height: 100px;
@@ -655,7 +721,7 @@
   .action-btn {
     padding: 11px 20px;
     font-size: 0.875rem;
-    
+
     .material-icons {
       font-size: 18px;
     }
@@ -663,18 +729,18 @@
 
   .suggestions {
     padding: 16px 14px;
-    
+
     .suggestions-title {
       font-size: 0.875rem;
-      
+
       .material-icons {
         font-size: 20px;
       }
     }
-    
+
     .suggestions-list li {
       font-size: 0.8125rem;
-      
+
       .material-icons {
         font-size: 18px;
       }
@@ -771,4 +837,3 @@
     }
   }
 }
-

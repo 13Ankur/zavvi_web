@@ -24,7 +24,7 @@ export class ShopDetailsComponent implements OnInit {
     private authService: AuthService,
     private apiService: ApiService,
     private seoService: SeoService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -59,13 +59,14 @@ export class ShopDetailsComponent implements OnInit {
           googleMapsUrl: shop.googleMapsUrl || '',
           contact: shop.contact || shop.phone || '',
           numberOfOffers: shop.numberOfOffers || 0,
-          category: shop.category
+          category: shop.category,
+          isPremium: shop.isPremium || false
         };
-        
+
         // Update SEO meta tags for shop page
         const categoryName = this.offer.category?.name || 'Deals';
         this.seoService.setShopPageMeta(this.offer.name, categoryName);
-        
+
         this.isLoading = false;
         console.log('Offer loaded:', this.offer);
       },

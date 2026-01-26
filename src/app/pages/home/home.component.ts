@@ -37,17 +37,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   slideInterval: any;
   categories: any[] = [];
   private prefetchTimeouts: Map<string, any> = new Map();
-  
+
   // Loading states for different sections
   isLoadingBanners: boolean = false;
   isLoadingCategories: boolean = false;
   isLoadingOffers: boolean = false;
-  
+
   // Mobile/Responsive state
   isMobile: boolean = false;
   isTablet: boolean = false;
   screenWidth: number = 0;
-  
+
   // Category icon mapping
   categoryIcons: { [key: string]: string } = {
     'restaurant': '🍽️',
@@ -131,38 +131,38 @@ export class HomeComponent implements OnInit, OnDestroy {
       // Don't load anything until location is selected
       return;
     }
-    
+
     console.log('📍 HomePage: Location already selected - loading app normally');
-    
+
     // Show loading state
     this.isLoading = true;
     this.errorMessage = '';
-    
+
     // Subscribe to location changes to reload offers
     this.locationSubscription = this.locationService.selectedLocation$.subscribe(location => {
       console.log('====================================');
       console.log('HomePage: Location subscription triggered');
       console.log('HomePage: New location:', location?.name, 'ID:', location?.id);
       console.log('HomePage: Current location:', this.selectedLocation?.name, 'ID:', this.selectedLocation?.id);
-      
+
       if (location) {
         const locationId = location.id || (location as any).slug;
         const currentId = this.selectedLocation?.id || (this.selectedLocation as any)?.slug;
-        
+
         console.log('HomePage: Comparing IDs - New:', locationId, 'Current:', currentId);
-        
+
         // Only reload if location actually changed
         if (!this.selectedLocation || locationId !== currentId) {
           console.log('✅ HomePage: Location CHANGED - Updating UI and reloading offers');
           console.log('HomePage: Updating from', this.selectedLocation?.name || 'none', 'to', location.name);
-          
+
           this.selectedLocation = location;
           this.selectedLocationId = locationId;
           this.currentLocation = location.name;
-          
+
           // Update SEO meta tags with location
           this.seoService.setHomePageMeta(location.name);
-          
+
           // Reload offers when location changes
           console.log('🔄 HomePage: Calling loadOffers() for', location.name);
           this.loadAllData();
@@ -174,7 +174,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
       console.log('====================================');
     });
-    
+
     // Load locations once (this will set the default location and trigger the subscription above)
     console.log('HomePage: Initializing - Loading locations...');
     this.loadLocations();
@@ -189,7 +189,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loadOffers();
     this.loadFeaturedShops();
   }
-  
+
   /**
    * Retry loading all data
    */
@@ -198,7 +198,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.loadLocations();
   }
-  
+
   /**
    * Go to home (reset state)
    */
@@ -230,12 +230,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadLocations() {
     this.isLoadingLocations = true;
     this.isLoading = true;
-    
+
     this.apiService.getLocations().subscribe({
       next: (locations) => {
         if (locations && locations.length > 0) {
           this.locations = locations;
-          
+
           // Check if there's a stored location first
           const storedLocation = SafeStorage.getItem('selectedLocation');
           if (storedLocation) {
@@ -256,7 +256,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               console.error('Error parsing stored location:', error);
             }
           }
-          
+
           // Do NOT auto-select any location. User must choose via modal.
           if (!this.selectedLocation) {
             console.warn('Home: No selected location after load. User must select manually.');
@@ -293,20 +293,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadOffers() {
     this.isLoadingOffers = true;
     this.errorMessage = '';
-    
+
     const locationName = this.locationService.getSelectedLocationName();
     console.log('🔍 Loading offers for location:', locationName);
-    
+
     const params: any = {};
     if (locationName && locationName.trim() !== '') {
       params.location = locationName;
     }
-    
+
     this.apiService.getShops(params).subscribe({
       next: (shops) => {
         try {
           console.log('📦 Raw shops response:', shops);
-          
+
           if (!shops) {
             console.warn('⚠️ Shops response is null or undefined');
             this.allOffers = [];
@@ -314,9 +314,9 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.checkAllLoadingComplete();
             return;
           }
-          
+
           let shopsArray: any[] = [];
-          
+
           if (Array.isArray(shops)) {
             shopsArray = shops;
           } else if (shops.data && Array.isArray(shops.data)) {
@@ -332,7 +332,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           }
 
           console.log('📊 Shops array length:', shopsArray.length);
-          
+
           if (shopsArray.length === 0) {
             console.log('⚠️ No shops found in the response');
             this.allOffers = [];
@@ -345,7 +345,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           let locationFilteredShops = shopsArray;
           if (locationName && locationName.trim() !== '') {
             console.log('🔍 Filtering shops by location:', locationName);
-            
+
             locationFilteredShops = shopsArray.filter((shop: any) => {
               const shopLocation = shop.location || shop.locations;
               if (!shopLocation) {
@@ -375,22 +375,23 @@ export class HomeComponent implements OnInit, OnDestroy {
           }
 
           console.log('✅ Filtered shops count:', locationFilteredShops.length);
-          
+
           // If searching, show ALL matching shops
           // If not searching, get one shop from each category for featured offers
           if (this.searchTerm && this.searchTerm.trim() !== '') {
             console.log('🔍 Search mode: Showing all matching shops');
-            
+
             this.allOffers = locationFilteredShops.map((shop: any) => ({
               id: shop._id || shop.id,
               title: shop.title || shop.name || 'Untitled',
               discount: shop.discount || shop.discountPercentage || '0%',
               image: shop.image || shop.imageUrl || shop.bannerImage || '',
-              category: shop.category
+              category: shop.category,
+              shop: shop
             }));
           } else {
             console.log('📂 Featured mode: Showing one shop per category');
-            
+
             // Get one shop from each category for featured offers
             const categoryMap = new Map();
             locationFilteredShops.forEach((shop: any) => {
@@ -399,18 +400,19 @@ export class HomeComponent implements OnInit, OnDestroy {
                 categoryMap.set(categoryId, shop);
               }
             });
-            
+
             console.log('📂 Categories found:', categoryMap.size);
-            
+
             this.allOffers = Array.from(categoryMap.values()).map((shop: any) => ({
               id: shop._id || shop.id,
               title: shop.title || shop.name || 'Untitled',
               discount: shop.discount || shop.discountPercentage || '0%',
               image: shop.image || shop.imageUrl || shop.bannerImage || '',
-              category: shop.category
+              category: shop.category,
+              shop: shop
             }));
           }
-          
+
           console.log('🎯 Final offers count:', this.allOffers.length);
           console.log('📋 Offers:', this.allOffers.map(o => o.title));
           this.isLoadingOffers = false;
@@ -430,7 +432,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   /**
    * Check if all data has finished loading
    */
@@ -446,12 +448,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadFeaturedShops() {
     this.isLoadingBanners = true;
     const locationName = this.locationService.getSelectedLocationName();
-    
+
     const params: any = {};
     if (locationName && locationName.trim() !== '') {
       params.location = locationName;
     }
-    
+
     this.apiService.getFeaturedShops(params).subscribe({
       next: (shops) => {
         if (shops && Array.isArray(shops)) {
@@ -460,7 +462,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             title: shop.title || shop.name,
             discount: shop.discount,
             image: shop.image || shop.bannerImage || shop.logo,
-            logo: shop.logo
+            logo: shop.logo,
+            isPremium: shop.isPremium // Map premium status
           }));
         } else {
           console.warn('Featured shops response is not an array:', shops);
@@ -485,7 +488,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.slideInterval) {
       clearInterval(this.slideInterval);
     }
-    
+
     // Auto-advance slides every 5 seconds
     this.slideInterval = setInterval(() => {
       this.nextSlide();
@@ -497,8 +500,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   prevSlide() {
-    this.currentSlideIndex = this.currentSlideIndex === 0 
-      ? this.bannerShops.length - 1 
+    this.currentSlideIndex = this.currentSlideIndex === 0
+      ? this.bannerShops.length - 1
       : this.currentSlideIndex - 1;
   }
 
@@ -521,7 +524,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   loadCategories() {
     this.isLoadingCategories = true;
-    
+
     this.apiService.getCategories().subscribe({
       next: (categories) => {
         if (categories && Array.isArray(categories)) {
@@ -553,10 +556,10 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   mapIonicToMaterialIcon(ionicIcon: string): string {
     if (!ionicIcon) return 'category';
-    
+
     // Remove -outline suffix if present (Ionic uses both restaurant and restaurant-outline)
     const cleanIcon = ionicIcon.replace('-outline', '').toLowerCase();
-    
+
     const iconMap: { [key: string]: string } = {
       // Food & Dining
       'restaurant': 'restaurant',
@@ -566,7 +569,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       'beer': 'local_bar',
       'wine': 'local_bar',
       'ice-cream': 'icecream',
-      
+
       // Health & Wellness
       'fitness': 'fitness_center',
       'barbell': 'fitness_center',
@@ -575,66 +578,66 @@ export class HomeComponent implements OnInit, OnDestroy {
       'medical': 'medical_services',
       'heart': 'favorite',
       'pulse': 'monitor_heart',
-      
+
       // Beauty & Grooming
       'cut': 'content_cut',
       'scissors': 'content_cut',
       'color-palette': 'face_retouching_natural',
       'brush': 'face_retouching_natural',
-      
+
       // Auto & Transport
       'car': 'directions_car',
       'car-sport': 'directions_car',
       'build': 'build',
-      
+
       // Fashion & Retail
       'shirt': 'checkroom',
       'bag': 'shopping_bag',
       'cart': 'shopping_cart',
       'storefront': 'store',
-      
+
       // Home & Services
       'home': 'home',
       'hammer': 'handyman',
       'construct': 'construction',
-      
+
       // Entertainment
       'film': 'movie',
       'game-controller': 'sports_esports',
       'musical-notes': 'music_note',
       'tv': 'tv',
-      
+
       // Education & Books
       'school': 'school',
       'book': 'menu_book',
       'library': 'local_library',
-      
+
       // Pets
       'paw': 'pets',
-      
+
       // Technology
       'phone-portrait': 'phone_iphone',
       'laptop': 'laptop',
       'desktop': 'computer',
-      
+
       // Gifts & Special
       'gift': 'card_giftcard',
       'balloon': 'celebration',
-      
+
       // Nature
       'leaf': 'eco',
       'flower': 'local_florist',
-      
+
       // Trending
       'trending-up': 'trending_up',
       'flash': 'flash_on',
       'flame': 'local_fire_department',
       'star': 'star',
-      
+
       // Default fallback
       'ellipse': 'category'
     };
-    
+
     return iconMap[cleanIcon] || 'category';
   }
 
@@ -693,7 +696,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
-    
+
     this.searchTimeout = setTimeout(() => {
       this.loadOffers();
     }, 300);
@@ -720,7 +723,7 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   private checkAndShowLocationModal() {
     console.log('📍 HomePage: BLOCKING - No location selected, showing modal...');
-    
+
     // Small delay to ensure page has loaded
     setTimeout(() => {
       this.showLocationModal();
@@ -733,18 +736,18 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   private showLocationModal() {
     console.log('📍 HomePage: Creating BLOCKING location modal...');
-    
+
     try {
       // Create modal component dynamically
       this.locationModalRef = this.viewContainerRef.createComponent(LocationModalComponent);
-      
+
       // Append to body
       if (typeof document !== 'undefined') {
         document.body.appendChild(this.locationModalRef.location.nativeElement);
       }
-      
+
       console.log('📍 HomePage: Location modal created - app is BLOCKED');
-      
+
       // Subscribe to location changes to reload page after selection
       const locationSub = this.locationService.selectedLocation$.subscribe(location => {
         if (location) {
@@ -756,7 +759,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           locationSub.unsubscribe();
         }
       });
-      
+
     } catch (error) {
       console.error('📍 HomePage: Error creating location modal:', error);
     }

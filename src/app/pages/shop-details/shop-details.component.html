@@ -1,13 +1,8 @@
 <div class="shop-details-page" role="main">
   <!-- Back Button (always visible) -->
   <div class="back-button-container" *ngIf="!isLoading">
-    <button 
-      class="back-btn" 
-      (click)="goBack()" 
-      (keydown.enter)="goBack()"
-      (keydown.space)="goBack(); $event.preventDefault()"
-      aria-label="Go back to home page"
-      type="button">
+    <button class="back-btn" (click)="goBack()" (keydown.enter)="goBack()"
+      (keydown.space)="goBack(); $event.preventDefault()" aria-label="Go back to home page" type="button">
       <span class="material-icons" aria-hidden="true">arrow_back</span>
       <span class="back-text">Back</span>
     </button>
@@ -23,11 +18,7 @@
   <div class="not-found-container" *ngIf="offerNotFound && !isLoading" role="alert">
     <h2>Shop Not Found</h2>
     <p>The shop you're looking for doesn't exist or has been removed.</p>
-    <button 
-      (click)="goBack()" 
-      (keydown.enter)="goBack()"
-      class="btn-primary"
-      type="button"
+    <button (click)="goBack()" (keydown.enter)="goBack()" class="btn-primary" type="button"
       aria-label="Go to home page">
       Go to Home
     </button>
@@ -36,13 +27,16 @@
   <article class="offer-details" *ngIf="offer && !isLoading">
     <!-- Banner Image -->
     <div class="banner-section" role="img" [attr.aria-label]="offer.title + ' banner image'">
-      <img 
-        [src]="offer.image" 
-        [alt]="offer.title + ' banner image'"
-        (error)="onImageError($event)"
-        loading="lazy" />
+      <img [src]="offer.image" [alt]="offer.title + ' banner image'" (error)="onImageError($event)" loading="lazy" />
       <div class="discount-overlay" *ngIf="offer.discount" aria-label="Discount offer">
         <span class="discount-text">{{ offer.discount }}</span>
+      </div>
+
+      <!-- Premium Partner Badge -->
+      <div class="premium-badge-detail" *ngIf="offer.isPremium">
+        <div class="badge-content">
+          <span class="badge-text">PREMIUM PARTNER</span>
+        </div>
       </div>
     </div>
 
@@ -52,7 +46,7 @@
       <header class="title-container">
         <div class="title-info">
           <h1 class="offer-title">{{ offer.title }}</h1>
-          
+
           <!-- Address and Timing -->
           <div class="quick-info">
             <p class="address-text" *ngIf="offer.address">
@@ -65,25 +59,17 @@
             </p>
           </div>
         </div>
-        
+
         <div class="logo-container">
-          <img 
-            [src]="offer.logo" 
-            [alt]="offer.title + ' logo'" 
-            class="shop-logo"
-            (error)="onLogoError($event)"
+          <img [src]="offer.logo" [alt]="offer.title + ' logo'" class="shop-logo" (error)="onLogoError($event)"
             loading="lazy" />
         </div>
       </header>
 
       <!-- Deals Card -->
-      <section class="deals-card" 
-               (click)="exploreDeals()"
-               (keydown.enter)="exploreDeals()"
-               (keydown.space)="exploreDeals(); $event.preventDefault()"
-               [attr.tabindex]="0"
-               role="button"
-               [attr.aria-label]="'View ' + offer.numberOfOffers + ' deals for ' + offer.title">
+      <section class="deals-card" (click)="exploreDeals()" (keydown.enter)="exploreDeals()"
+        (keydown.space)="exploreDeals(); $event.preventDefault()" [attr.tabindex]="0" role="button"
+        [attr.aria-label]="'View ' + offer.numberOfOffers + ' deals for ' + offer.title">
         <div class="deals-content">
           <div class="deals-info">
             <h3>Deals</h3>
@@ -98,14 +84,10 @@
       <!-- Shop Information Card -->
       <section class="shop-info-card" aria-labelledby="shop-info-title">
         <h2 id="shop-info-title" class="sr-only">Shop Information</h2>
-        <div class="detail-item clickable" 
-             (click)="openGoogleMaps()"
-             (keydown.enter)="openGoogleMaps()"
-             (keydown.space)="openGoogleMaps(); $event.preventDefault()"
-             [attr.tabindex]="0"
-             role="button"
-             *ngIf="offer.address || offer.googleMapsUrl"
-             [attr.aria-label]="'Open ' + (offer.address || 'location') + ' in Google Maps'">
+        <div class="detail-item clickable" (click)="openGoogleMaps()" (keydown.enter)="openGoogleMaps()"
+          (keydown.space)="openGoogleMaps(); $event.preventDefault()" [attr.tabindex]="0" role="button"
+          *ngIf="offer.address || offer.googleMapsUrl"
+          [attr.aria-label]="'Open ' + (offer.address || 'location') + ' in Google Maps'">
           <span class="material-icons icon" aria-hidden="true">location_on</span>
           <div class="detail-content">
             <span class="detail-label">Address</span>
@@ -114,14 +96,9 @@
           </div>
           <span class="material-icons open-icon" aria-hidden="true">open_in_new</span>
         </div>
-        <div class="detail-item clickable" 
-             (click)="callShop()"
-             (keydown.enter)="callShop()"
-             (keydown.space)="callShop(); $event.preventDefault()"
-             [attr.tabindex]="0"
-             role="button"
-             *ngIf="offer.contact"
-             [attr.aria-label]="'Call ' + offer.contact">
+        <div class="detail-item clickable" (click)="callShop()" (keydown.enter)="callShop()"
+          (keydown.space)="callShop(); $event.preventDefault()" [attr.tabindex]="0" role="button" *ngIf="offer.contact"
+          [attr.aria-label]="'Call ' + offer.contact">
           <span class="material-icons icon" aria-hidden="true">phone</span>
           <div class="detail-content">
             <span class="detail-label">Contact</span>
@@ -135,21 +112,21 @@
       <!-- About Merchant Section -->
       <section class="about-section" *ngIf="offer.aboutMerchant || offer.cuisines" aria-labelledby="about-title">
         <h2 id="about-title" class="section-title">ABOUT THE MERCHANT</h2>
-        
+
         <div class="about-card">
           <h3 class="merchant-name">{{ offer.title }}</h3>
-          
+
           <p class="about-text" *ngIf="offer.aboutMerchant">
             {{ offer.aboutMerchant }}
           </p>
-          
+
           <div class="cuisines-section" *ngIf="offer.cuisines">
             <h4 class="cuisines-title">CUISINES</h4>
             <p class="cuisines-text">{{ offer.cuisines }}</p>
           </div>
         </div>
       </section>
-      
+
       <!-- Details Card -->
       <section class="details-card" *ngIf="offer.validUntil || offer.terms" aria-labelledby="details-title">
         <h2 id="details-title" class="sr-only">Offer Details</h2>
@@ -171,4 +148,3 @@
     </div>
   </article>
 </div>
-

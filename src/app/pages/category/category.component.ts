@@ -21,6 +21,7 @@ interface Shop {
     name: string;
     icon: string;
   };
+  isPremium?: boolean;
 }
 
 @Component({
@@ -42,7 +43,7 @@ export class CategoryComponent implements OnInit {
     private location: Location,
     private router: Router,
     private seoService: SeoService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const categorySlug = this.route.snapshot.paramMap.get('id');
@@ -53,36 +54,37 @@ export class CategoryComponent implements OnInit {
 
   loadCategoryShops(categorySlug: string) {
     const locationId = this.locationService.getSelectedLocationId();
-    
+
     console.log('📋 Loading shops for category:', categorySlug, 'location:', locationId);
-    
-    this.apiService.getShops({ 
-      category: categorySlug, 
-      location: locationId 
+
+    this.apiService.getShops({
+      category: categorySlug,
+      location: locationId
     }).subscribe({
       next: (shops) => {
         console.log('✅ Received shops:', shops.length);
         console.log('📦 Raw shops data:', shops);
-        
+
         // Update SEO meta tags for category page
         if (shops.length > 0 && shops[0].category) {
           this.categoryName = shops[0].category.name;
           const location = this.locationService.getSelectedLocationName();
           this.seoService.setCategoryPageMeta(this.categoryName, location);
         }
-        
+
         // Process shops to normalize image URLs - prioritize 'image' field like mobile app
         this.shops = shops.map((shop: Shop) => {
           // Get the primary image (try all possible fields)
           const rawImage = shop.image || shop.imageUrl || shop.banner || shop.bannerImage || shop.logo || '';
-          
+
           const processedShop = {
             ...shop,
             image: this.getFullImageUrl(rawImage),
             logo: shop.logo ? this.getFullImageUrl(shop.logo) : undefined,
-            banner: shop.banner ? this.getFullImageUrl(shop.banner) : undefined
+            banner: shop.banner ? this.getFullImageUrl(shop.banner) : undefined,
+            isPremium: shop.isPremium || false
           };
-          
+
           console.log(`🏪 Shop "${shop.title || shop.name}":`, {
             rawImage: shop.image,
             rawImageUrl: shop.imageUrl,
@@ -91,17 +93,17 @@ export class CategoryComponent implements OnInit {
             rawBannerImage: shop.bannerImage,
             processedImage: processedShop.image
           });
-          
+
           return processedShop;
         });
-        
+
         console.log('🖼️ Processed shops with full image URLs:', this.shops);
-        
+
         if (this.shops.length > 0 && this.shops[0].category) {
           this.categoryName = this.shops[0].category.name;
           console.log('📂 Category name:', this.categoryName);
         }
-        
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -129,20 +131,20 @@ export class CategoryComponent implements OnInit {
       this.router.navigate(['/']);
     }
   }
-  
+
   // Convert relative image URLs to full URLs
   private getFullImageUrl(imageUrl: string | undefined): string {
     if (!imageUrl) {
       console.log('⚠️ No image URL provided');
       return '';
     }
-    
+
     // If already a full URL, return as is
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       console.log('✓ Image URL is already full:', imageUrl.substring(0, 50) + '...');
       return imageUrl;
     }
-    
+
     // If it's a relative URL starting with /, prepend the API base URL
     if (imageUrl.startsWith('/')) {
       const baseUrl = environment.apiUrl.replace('/api', '');
@@ -150,28 +152,28 @@ export class CategoryComponent implements OnInit {
       console.log('🔗 Converting relative URL:', imageUrl, '→', fullUrl);
       return fullUrl;
     }
-    
+
     // If it's a relative path without leading /, prepend base URL with /
     const baseUrl = environment.apiUrl.replace('/api', '');
     const fullUrl = `${baseUrl}/${imageUrl}`;
     console.log('🔗 Converting relative path:', imageUrl, '→', fullUrl);
     return fullUrl;
   }
-  
+
   // Handle image load errors with fallback
   onImageError(event: any, shopName: string) {
     console.log('❌ Image failed to load for shop:', shopName);
-    
+
     const firstLetter = shopName ? shopName.charAt(0).toUpperCase() : 'S';
     const fallbackUrl = `https://ui-avatars.com/api/?name=${firstLetter}&size=400&background=6C47FF&color=fff&bold=true&format=png`;
-    
+
     console.log('🔄 Using fallback avatar:', fallbackUrl);
     event.target.src = fallbackUrl;
-    
+
     // Prevent infinite error loop
     event.target.onerror = null;
   }
-  
+
   // Get shop image - prioritize 'image' field like mobile app
   getShopLogo(shop: Shop): string {
     console.log(`🖼️ getShopLogo for "${shop.title || shop.name}":`, {
@@ -181,7 +183,7 @@ export class CategoryComponent implements OnInit {
       banner: shop.banner,
       bannerImage: shop.bannerImage
     });
-    
+
     // Priority order (same as mobile app):
     // 1. image
     // 2. imageUrl
@@ -189,14 +191,14 @@ export class CategoryComponent implements OnInit {
     // 4. bannerImage
     // 5. logo
     // 6. fallback avatar
-    
+
     const imageToUse = shop.image || shop.imageUrl || shop.banner || shop.bannerImage || shop.logo;
-    
+
     if (imageToUse && imageToUse.trim() !== '' && imageToUse !== 'null') {
       console.log(`✓ Using image for ${shop.title || shop.name}:`, imageToUse);
       return imageToUse;
     }
-    
+
     // Generate fallback avatar
     const shopName = shop.title || shop.name || 'Shop';
     const firstLetter = shopName.charAt(0).toUpperCase();
@@ -204,7 +206,7 @@ export class CategoryComponent implements OnInit {
     console.log(`⚠️ Using avatar fallback for ${shopName}:`, fallback);
     return fallback;
   }
-  
+
   // Track by function for better performance
   trackByShopId(index: number, shop: Shop): string {
     return shop._id || index.toString();

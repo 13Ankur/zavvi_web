@@ -2,18 +2,18 @@
   <div class="page-content">
     <!-- Header -->
     <header class="page-header">
-      <button 
-        class="back-btn" 
-        (click)="goBack()"
-        (keydown.enter)="goBack()"
-        (keydown.space)="goBack(); $event.preventDefault()"
-        aria-label="Go back to shop details"
-        type="button">
+      <button class="back-btn" (click)="goBack()" (keydown.enter)="goBack()"
+        (keydown.space)="goBack(); $event.preventDefault()" aria-label="Go back to shop details" type="button">
         <span class="material-icons" aria-hidden="true">arrow_back</span>
         Back
       </button>
       <h1 *ngIf="shopName">{{ shopName }} - Deals</h1>
       <h1 *ngIf="!shopName">Deals</h1>
+      <div class="premium-badge-header" *ngIf="isPremium">
+        <div class="badge-content">
+          <span class="badge-text">PREMIUM PARTNER</span>
+        </div>
+      </div>
     </header>
 
     <!-- Loading -->
@@ -38,23 +38,18 @@
     </div>
 
     <!-- Deals Grid -->
-    <section *ngIf="!isLoading && deals.length > 0" class="deals-grid" role="list" [attr.aria-label]="'Deals for ' + shopName">
-      <article 
-        class="deal-card" 
-        *ngFor="let deal of deals; trackBy: trackByDealId" 
-        role="listitem"
-        [class.golden-deal-card]="deal.isGoldenCoupon"
-        (click)="claimDeal(deal)"
-        (keydown.enter)="claimDeal(deal)"
-        (keydown.space)="claimDeal(deal); $event.preventDefault()"
-        [attr.tabindex]="0"
+    <section *ngIf="!isLoading && deals.length > 0" class="deals-grid" role="list"
+      [attr.aria-label]="'Deals for ' + shopName">
+      <article class="deal-card" *ngFor="let deal of deals; trackBy: trackByDealId" role="listitem"
+        [class.golden-deal-card]="deal.isGoldenCoupon" (click)="claimDeal(deal)" (keydown.enter)="claimDeal(deal)"
+        (keydown.space)="claimDeal(deal); $event.preventDefault()" [attr.tabindex]="0"
         [attr.aria-label]="deal.title + ' - ' + deal.discount + (deal.isGoldenCoupon ? ', Golden offer' : '')">
         <!-- Golden Badge (Top Left) -->
         <div class="golden-crown-badge" *ngIf="deal.isGoldenCoupon">
           <span class="material-icons">star</span>
           <span>GOLDEN</span>
         </div>
-        
+
         <!-- Discount Badge (Top Right) - Hidden for Golden Coupons -->
         <div class="discount-badge" *ngIf="!deal.isGoldenCoupon">{{ deal.discount }}</div>
 
@@ -62,13 +57,13 @@
         <div class="deal-content">
           <h3 class="deal-title">{{ deal.title }}</h3>
           <p class="deal-description">{{ deal.description }}</p>
-          
+
           <!-- One-Time Use Badge (Only for Golden Coupons) -->
           <div class="one-time-use-badge" *ngIf="deal.isGoldenCoupon">
             <span class="material-icons">info</span>
             <span>One-Time Use Only • Limited to {{ deal.maxRedemptions || '∞' }} Users</span>
           </div>
-          
+
           <!-- View Details Link -->
           <div class="view-details-link">
             <span>{{ deal.isGoldenCoupon ? 'Claim Golden Offer' : 'View Details' }}</span>
@@ -81,14 +76,10 @@
 </div>
 
 <!-- QR Code Modal -->
-<div class="qr-modal" 
-     [class.open]="isQRModalOpen" 
-     role="dialog" 
-     aria-modal="true" 
-     aria-labelledby="qr-modal-title"
-     [style.display]="isQRModalOpen ? 'flex' : 'none'">
+<div class="qr-modal" [class.open]="isQRModalOpen" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title"
+  [style.display]="isQRModalOpen ? 'flex' : 'none'">
   <div class="modal-backdrop" (click)="closeQRModal()"></div>
-  
+
   <div class="modal-content">
     <button class="close-btn" (click)="closeQRModal()" aria-label="Close modal">
       <span class="material-icons">close</span>
@@ -178,7 +169,7 @@
           <span class="note-title">Important</span>
         </div>
         <p>
-          This coupon can only be used once by <strong>{{ userName }}</strong>. 
+          This coupon can only be used once by <strong>{{ userName }}</strong>.
           Present this QR code to the vendor at the time of purchase.
         </p>
       </div>
