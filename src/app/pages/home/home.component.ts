@@ -537,9 +537,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (categories && Array.isArray(categories)) {
           this.categories = categories.map((cat: any) => ({
             ...cat,
-            materialIcon: this.mapIonicToMaterialIcon(cat.icon) // Add Material Icon mapping
+            isOnline: cat.isOnline || false,
+            materialIcon: this.mapIonicToMaterialIcon(cat.icon)
           }));
-          console.log('✅ Categories loaded with Material Icons:', this.categories);
+          console.log('✅ Categories loaded with isOnline flag:', this.categories);
         } else {
           console.warn('Categories response is not an array:', categories);
           this.categories = [];
@@ -555,6 +556,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 
   /**
    * Map Ionic icon names (from API) to Google Material Icons
@@ -660,10 +662,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   navigateToCategory(categoryId: string) {
-    if (categoryId) {
+    if (!categoryId) return;
+
+    const category = this.categories.find(c => c.slug === categoryId || c._id === categoryId);
+
+    if (category?.isOnline) {
+      console.log('🌍 Web: Navigating directly to online coupons for:', categoryId);
+      this.router.navigate(['/online-coupons', categoryId]);
+    } else {
       this.router.navigate(['/category', categoryId]);
     }
   }
+
 
   /**
    * Prefetch category data on hover

@@ -159,7 +159,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Check for session expired query param
@@ -167,7 +167,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (params['sessionExpired'] === 'true') {
         this.sessionExpiredMessage = 'Your session has expired. Please login again to continue.';
         // Clear the query param from URL without reloading
-        this.router.navigate([], { 
+        this.router.navigate([], {
           relativeTo: this.route,
           queryParams: {},
           replaceUrl: true
@@ -175,21 +175,21 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
       if (params['accessDenied'] === 'true') {
         this.sessionExpiredMessage = 'Access denied. Please login to continue.';
-        this.router.navigate([], { 
+        this.router.navigate([], {
           relativeTo: this.route,
           queryParams: {},
           replaceUrl: true
         });
       }
     });
-    
+
     // Check for redirect URL from storage (set by interceptor)
     const redirectAfterLogin = SafeStorage.getItem('redirectAfterLogin');
     if (redirectAfterLogin) {
       this.authService.setRedirectUrl(redirectAfterLogin);
       SafeStorage.removeItem('redirectAfterLogin');
     }
-    
+
     if (this.authService.isLoggedIn()) {
       this.handleRedirect();
     }
@@ -203,12 +203,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onSendOTP() {
     this.errorMessage = '';
-    
+
     if (!this.mobile || this.mobile.trim().length === 0) {
       this.errorMessage = 'Please enter your mobile number';
       return;
     }
-    
+
     if (this.mobile.length < 10) {
       this.errorMessage = 'Please enter a valid 10-digit mobile number';
       return;
@@ -234,7 +234,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   startResendTimer() {
     this.canResend = false;
     this.resendTimer = 60;
-    
+
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
@@ -282,9 +282,9 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (this.timerInterval) {
           clearInterval(this.timerInterval);
         }
-        
+
         this.profileComplete = response.profileComplete !== false;
-        
+
         console.log('Login successful');
         this.handleRedirect();
       },
@@ -294,34 +294,54 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (error.message) {
           errorMsg = error.message;
         }
-        
+
         this.errorMessage = errorMsg;
       }
     });
   }
 
   private handleRedirect() {
+    console.log('🌍 Web: Starting redirection logic');
     // Get current user to check if profile is complete
     const currentUser = this.authService.getCurrentUser();
+    console.log('👤 Web: Current user:', currentUser?.name || 'No Name');
+
     // Profile is complete if user has a name (email is optional)
-    const needsProfileCompletion = !this.profileComplete || 
+    const needsProfileCompletion = !this.profileComplete ||
       (currentUser && !currentUser.name);
-    
+
+    console.log('📝 Web: Needs profile completion?', needsProfileCompletion);
+
     // If profile is incomplete (no name), redirect to personal info page
     if (needsProfileCompletion) {
-      this.router.navigate(['/personal-info'], { 
-        queryParams: { fromLogin: 'true' } 
+      console.log('➡️ Web: Redirecting to personal-info');
+      this.router.navigate(['/personal-info'], {
+        queryParams: { fromLogin: 'true' }
       });
       return;
     }
-    
+
     // Otherwise, handle normal redirect
     const redirectUrl = this.authService.getRedirectUrl();
+    console.log('🔗 Web: Saved redirect URL:', redirectUrl);
+
     if (redirectUrl) {
+      console.log('➡️ Web: Navigating to saved redirect URL:', redirectUrl);
       this.authService.clearRedirectUrl();
-      this.router.navigateByUrl(redirectUrl);
+      this.router.navigateByUrl(redirectUrl).then(success => {
+        console.log('🏁 Web: Navigation success?', success);
+        if (!success) {
+          console.error('❌ Web: Navigation failed, falling back to home');
+          this.router.navigate(['/']);
+        }
+      }).catch(err => {
+        console.error('❌ Web: Navigation error:', err);
+        this.router.navigate(['/']);
+      });
     } else {
+      console.log('➡️ Web: No redirect URL, navigating to home');
       this.router.navigate(['/']);
     }
   }
+
 }

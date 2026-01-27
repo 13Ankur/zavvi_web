@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-online-coupons',
@@ -21,10 +22,18 @@ export class OnlineCouponsComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private apiService: ApiService
+        private apiService: ApiService,
+        private authService: AuthService
     ) { }
 
     ngOnInit() {
+        if (!this.authService.isLoggedIn()) {
+            console.warn('🔐 Auth required for online coupons');
+            this.authService.setRedirectUrl(this.router.url);
+            this.router.navigate(['/login'], { queryParams: { accessDenied: 'true' } });
+            return;
+        }
+
         this.route.paramMap.subscribe(params => {
             this.categorySlug = params.get('category') || '';
             if (this.categorySlug) {
@@ -36,13 +45,17 @@ export class OnlineCouponsComponent implements OnInit {
         });
     }
 
+
     loadOnlineCoupons() {
+        console.log('📦 Web: Loading online coupons for category:', this.categorySlug);
         this.isLoading = true;
         this.errorMessage = '';
 
         this.apiService.getOnlineCoupons({ category: this.categorySlug }).subscribe({
             next: (response) => {
+                console.log('✅ Web: Raw response:', response);
                 const couponsData = Array.isArray(response) ? response : response.data || [];
+                console.log('📊 Web: Coupons found:', couponsData.length);
 
                 this.coupons = couponsData.map((coupon: any) => ({
                     id: coupon._id || coupon.id,
@@ -65,12 +78,24 @@ export class OnlineCouponsComponent implements OnInit {
                 this.isLoading = false;
             },
             error: (error) => {
-                console.error('Error loading online coupons:', error);
+                console.error('❌ Web: Error loading online coupons:', error);
                 this.errorMessage = 'Failed to load deals. Please try again.';
                 this.isLoading = false;
             }
         });
+
+        // Safety timeout (10 seconds)
+        setTimeout(() => {
+            if (this.isLoading) {
+                console.warn('⚠️ Web: Coupon load timed out, forcing loader off');
+                this.isLoading = false;
+                if (this.coupons.length === 0) {
+                    this.errorMessage = 'Connection timed out. Please try again.';
+                }
+            }
+        }, 10000);
     }
+
 
 
     getCategoryDisplayName(slug: string): string {
