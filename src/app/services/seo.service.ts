@@ -13,7 +13,7 @@ export class SeoService {
   constructor(
     private titleService: Title,
     private metaService: Meta
-  ) {}
+  ) { }
 
   setTitle(title: string) {
     const fullTitle = title ? `${title} - Zavvi` : this.defaultTitle;
@@ -23,7 +23,7 @@ export class SeoService {
   setMetaTags(description: string, keywords: string) {
     this.metaService.updateTag({ name: 'description', content: description });
     this.metaService.updateTag({ name: 'keywords', content: keywords });
-    
+
     this.metaService.updateTag({ property: 'og:description', content: description });
     this.metaService.updateTag({ property: 'twitter:description', content: description });
   }
@@ -32,7 +32,7 @@ export class SeoService {
     const fullUrl = `${this.baseUrl}${path}`;
     this.metaService.updateTag({ property: 'og:url', content: fullUrl });
     this.metaService.updateTag({ property: 'twitter:url', content: fullUrl });
-    
+
     if (typeof document !== 'undefined') {
       const existingLink = document.querySelector('link[rel="canonical"]');
       if (existingLink) {
@@ -66,6 +66,37 @@ export class SeoService {
       `deals${locationText}, discounts, coupons, savings, local offers`
     );
     this.updateCanonicalUrl('/');
+    this.setAppIndexingSchema();
+  }
+
+  setAppIndexingSchema() {
+    const appSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': 'Zavvi',
+      'operatingSystem': 'ANDROID, IOS',
+      'applicationCategory': 'ShoppingApplication',
+      'aggregateRating': {
+        '@type': 'AggregateRating',
+        'ratingValue': '4.8',
+        'reviewCount': '1250'
+      },
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'INR'
+      },
+      'installUrl': 'https://play.google.com/store/apps/details?id=com.zavvi.app',
+      'downloadUrl': 'https://play.google.com/store/apps/details?id=com.zavvi.app',
+      'featureList': 'Exclusive deals, Discount coupons, Local offers, QR code redemption',
+      'screenshot': 'https://www.zavvi.deals/logos/zavvi-logo.png',
+      'softwareVersion': '1.0.0',
+      'mainEntityOfPage': {
+        '@type': 'WebPage',
+        '@id': 'https://www.zavvi.deals'
+      }
+    };
+    this.addStructuredData(appSchema);
   }
 
   setCategoryPageMeta(categoryName: string, location?: string) {
@@ -133,7 +164,7 @@ export class SeoService {
       'about Zavvi, deal platform, discount coupons, save money, local deals, how it works, verified offers'
     );
     this.updateCanonicalUrl('/about');
-    
+
     const aboutSchema = {
       '@context': 'https://schema.org',
       '@type': 'AboutPage',

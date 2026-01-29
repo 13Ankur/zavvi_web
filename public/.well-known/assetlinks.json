@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.zavvi.app",
+            "sha256_cert_fingerprints": [
+                "F1:59:04:1D:09:FD:43:A9:91:DB:0C:C3:7A:41:25:FE:46:8F:1A:50:57:CB:C0:2F:90:BA:04:3B:E9:F9:9D:0B"
+            ]
+        }
+    }
+]
