@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.zavvi.co.in/api'
+  apiUrl: 'https://zavvi.onrender.com/api'
 };
 
